@@ -91,7 +91,65 @@ let tx=C.filter(x=>['ya','tampil'].includes(String(x.show).toLowerCase()));txs.i
 pop.innerHTML=P.map(x=>`<div class="stat"><small>${x.sub}</small><strong>${x.value||'-'}</strong><small>${x.cat}</small></div>`).join('');
 notices.innerHTML=N.filter(visible).sort((a,b)=>D(b.date)-D(a.date)).map(x=>`<article class="card notice"><div class="cb"><div class="date">${x.priority||'INFO'} • ${fd(x.date)}</div><h4>${x.title}</h4><p>${x.summary}</p></div></article>`).join('');
 people.innerHTML=O.filter(visible).sort((a,b)=>Number(a.order||999)-Number(b.order||999)).map(x=>{let im=imgUrl(x.photo),wa=String(x.wa).replace(/\D/g,'');return `<article class="card person">${im?`<img class="pic" src="${im}" loading="lazy">`:''}<h4>${x.name}</h4><p>${x.role}</p>${wa?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${wa}">💬 WhatsApp</a>`:''}</article>`}).join('');
-suggestForm.addEventListener('submit',async e=>{e.preventDefault();if(!suggestForm.reportValidity())return;if(!API_URL){formMsg.textContent='Form sudah siap. Aktifkan Apps Script Web App agar data tersimpan ke spreadsheet.';return}let f=new FormData(suggestForm),payload={action:'suggestion',nama:f.get('nama'),gang:f.get('gang'),hp:f.get('hp'),saran:f.get('saran')};try{let r=await fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}),j=await r.json();if(!j.ok)throw Error();formMsg.textContent='Saran berhasil dikirim. Nomor: '+(j.id||'-');suggestForm.reset()}catch{formMsg.textContent='Saran belum berhasil dikirim. Silakan coba kembali.'}});
+suggestForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!suggestForm.reportValidity())return;
+
+  const btn=suggestForm.querySelector('button[type="submit"]');
+  const f=new FormData(suggestForm);
+  const payload={
+    action:'suggestion',
+    nama:String(f.get('nama')||'').trim(),
+    gang:String(f.get('gang')||'').trim(),
+    hp:String(f.get('hp')||'').trim(),
+    saran:String(f.get('saran')||'').trim()
+  };
+
+  if(!payload.nama||!payload.gang||!payload.hp||!payload.saran){
+    formMsg.textContent='Mohon lengkapi semua kolom.';
+    return;
+  }
+
+  if(!API_URL){
+    formMsg.textContent='Layanan pengiriman saran belum tersedia.';
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent='Mengirim...';
+  formMsg.textContent='Mohon tunggu, saran sedang dikirim.';
+
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),20000);
+
+    const r=await fetch(API_URL,{
+      method:'POST',
+      body:JSON.stringify(payload),
+      signal:controller.signal,
+      redirect:'follow',
+      cache:'no-store'
+    });
+
+    clearTimeout(timer);
+
+    const text=await r.text();
+    let j={};
+    try{j=JSON.parse(text)}catch(_){}
+
+    if(!r.ok || j.ok===false)throw new Error(j.message||'Pengiriman gagal');
+
+    formMsg.textContent='Terima kasih. Saran berhasil dikirim'+(j.id?' dengan nomor '+j.id:'')+'.';
+    suggestForm.reset();
+  }catch(err){
+    formMsg.textContent=err.name==='AbortError'
+      ?'Pengiriman terlalu lama. Silakan periksa koneksi lalu coba kembali.'
+      :'Saran belum berhasil dikirim. Silakan coba kembali.';
+  }finally{
+    btn.disabled=false;
+    btn.textContent='Kirim Saran';
+  }
+});
 
 async function refreshFromLiveAPI(){
   const status=(msg)=>console.log("[RT05]",msg);
