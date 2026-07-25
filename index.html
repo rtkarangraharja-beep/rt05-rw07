@@ -119,7 +119,17 @@ function nearestDateSort(a,b){
   if((da>=0)!==(db>=0))return da>=0?-1:1;
   return ta-tb;
 }
-function noticeCard(x){return `<article class="card notice"><div class="cb"><div class="date">${x.priority||'INFO'} • ${fd(x.date)}</div><h4>${x.title}</h4><p>${x.summary}</p></div></article>`}
+function noticeCard(x){
+  const full=String(x.summary||'');
+  const short=full.length>140?full.slice(0,137).trim()+'…':full;
+  const encoded=encodeURIComponent(JSON.stringify(x));
+  return `<article class="card notice"><div class="cb"><div class="date">${x.priority||'INFO'} • ${fd(x.date)}</div><h4>${x.title}</h4><p>${short}</p>${full.length>140?`<button class="btn ghost" onclick="openNotice('${encoded}')">Baca selengkapnya →</button>`:''}</div></article>`
+}
+function openNotice(encoded){
+  const x=JSON.parse(decodeURIComponent(encoded));
+  detail.innerHTML=`<div class="date">${x.priority||'INFO'} • ${fd(x.date)}</div><h2 style="margin:8px 0 14px">${x.title}</h2><div class="article">${x.summary||''}</div>`;
+  modal.classList.add('on');
+}
 function agendaCard(x){let z=D(x.date),mo=z.toLocaleDateString('id-ID',{month:'short'}).toUpperCase();return `<div class="agenda"><div class="cal">${mo}<b>${z.getDate()}</b></div><div><h4>${x.title}</h4><p>🕒 ${x.time||'-'} &nbsp; 📍 ${x.place||'-'}</p><p>${x.desc||''}</p></div></div>`}
 let today=new Date();today.setHours(0,0,0,0);let agendas=G.filter(visible).sort((a,b)=>D(a.date)-D(b.date));let future=agendas.filter(x=>D(x.date)>=today);homeAgenda.innerHTML=(future.length?future:agendas).slice(0,3).map(agendaCard).join('')||'<p class="hint">Belum ada agenda terdekat.</p>';allAgenda.innerHTML=agendas.map(agendaCard).join('')||'<p class="hint">Belum ada agenda.</p>';
 let last=C.filter(x=>x.balance!==''&&x.balance!==null).slice(-1)[0]||{balance:0};homeBal.textContent=bal.textContent=rup(last.balance);inc.textContent=rup(C.reduce((s,x)=>s+Number(x.income||0),0));exp.textContent=rup(C.reduce((s,x)=>s+Number(x.expense||0),0));
