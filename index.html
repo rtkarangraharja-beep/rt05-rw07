@@ -189,5 +189,45 @@ async function refreshFromLiveAPI(){
   }
 }
 
-async function visits(){if(API_URL){try{let r=await fetch(API_URL+'?action=visit'),j=await r.json();visitTotal.textContent=j.total;visitMonth.textContent=j.month;return}catch(e){}}visitTotal.textContent='aktif saat online';visitMonth.textContent='aktif saat online'}refreshFromLiveAPI();visits();
+async function visits(){
+  if(API_URL){
+    try{
+      const today=new Date().toLocaleDateString('en-CA');
+      const key='rt05_visit_day';
+      const last=localStorage.getItem(key);
+      const action=(last===today)?'visitStats':'visit';
+      let r=await fetch(API_URL+'?action='+action),j=await r.json();
+
+      // Compatibility fallback: if backend has no read-only visitStats action,
+      // do not increment again; show the last known values stored in this browser.
+      if(action==='visitStats' && (j==null || j.total==null || j.month==null)){
+        const cached=JSON.parse(localStorage.getItem('rt05_visit_stats')||'null');
+        if(cached){
+          visitTotal.textContent=cached.total;
+          visitMonth.textContent=cached.month;
+          return;
+        }
+      }
+
+      if(j && j.total!=null && j.month!=null){
+        visitTotal.textContent=j.total;
+        visitMonth.textContent=j.month;
+        localStorage.setItem('rt05_visit_stats',JSON.stringify({total:j.total,month:j.month}));
+        if(action==='visit') localStorage.setItem(key,today);
+        return;
+      }
+    }catch(e){
+      try{
+        const cached=JSON.parse(localStorage.getItem('rt05_visit_stats')||'null');
+        if(cached){
+          visitTotal.textContent=cached.total;
+          visitMonth.textContent=cached.month;
+          return;
+        }
+      }catch(_){}
+    }
+  }
+  visitTotal.textContent='aktif saat online';
+  visitMonth.textContent='aktif saat online'
+}refreshFromLiveAPI();visits();
 </script></body></html>
