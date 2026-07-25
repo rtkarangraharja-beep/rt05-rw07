@@ -205,6 +205,7 @@ homeNotice.innerHTML=activeNotices.length?noticeCard(activeNotices[0]):'<article
 people.innerHTML=O.filter(visible).sort((a,b)=>Number(a.order||999)-Number(b.order||999)).map(x=>{let im=imgUrl(x.photo),wa=String(x.wa).replace(/\D/g,'');return `<article class="card person">${im?`<img class="pic" src="${im}" loading="lazy">`:''}<h4>${x.name}</h4><p>${x.role}</p>${wa?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${wa}">💬 WhatsApp</a>`:''}</article>`}).join('');
 suggestForm.addEventListener('submit',async e=>{e.preventDefault();if(!suggestForm.reportValidity())return;if(!API_URL){formMsg.textContent='Form sudah siap. Aktifkan Apps Script Web App agar data tersimpan ke spreadsheet.';return}let f=new FormData(suggestForm),payload={action:'suggestion',nama:f.get('nama'),gang:f.get('gang'),hp:f.get('hp'),saran:f.get('saran')};try{let r=await fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}),j=await r.json();if(!j.ok)throw Error();formMsg.textContent='Saran berhasil dikirim. Nomor: '+(j.id||'-');suggestForm.reset()}catch{formMsg.textContent='Saran belum berhasil dikirim. Silakan coba kembali.'}});
 
+let rtLiveLoadStarted=Date.now();
 async function refreshFromLiveAPI(){
   const status=(msg)=>console.log("[RT05]",msg);
   try{
@@ -272,8 +273,16 @@ async function refreshFromLiveAPI(){
 
     status("Data live berhasil.");
     const loader=document.getElementById("liveLoading");
-    if(loader) loader.classList.add("done");
-    document.body.classList.remove("rt-loading");
+    // Tunggu browser benar-benar selesai mengecat DOM data live sebelum membuka layar.
+    const wait=Math.max(0,500-(Date.now()-rtLiveLoadStarted));
+    setTimeout(()=>{
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          if(loader) loader.classList.add("done");
+          document.body.classList.remove("rt-loading");
+        });
+      });
+    },wait);
   }catch(err){
     console.error("[RT05] API live gagal, memakai data fallback:",err);
     const loadingText=document.getElementById("liveLoadingText");
@@ -332,7 +341,7 @@ setTimeout(function(){
     if(t)t.textContent="Koneksi lebih lambat dari biasanya. Menampilkan data terakhir yang tersedia.";
     setTimeout(()=>{loader.classList.add("done");document.body.classList.remove("rt-loading")},1000);
   }
-},10000);
+},20000);
 </script>
 
 </body></html>
