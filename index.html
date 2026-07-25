@@ -128,6 +128,31 @@ body.rt-loading #liveLoading{visibility:visible !important}
 .last-update .lu-dot{width:6px;height:6px;border-radius:50%;background:#b5121b;flex:0 0 auto}
 @media(max-width:760px){.last-update{margin-top:8px;font-size:11px;line-height:1.45}}
 </style>
+
+<style>
+@media (max-width:760px){
+  #lastUpdate.last-update{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    position:relative !important;
+    width:100% !important;
+    height:auto !important;
+    overflow:visible !important;
+    margin-top:8px !important;
+    font-size:11px !important;
+  }
+  #lastUpdate.last-update span{
+    display:inline !important;
+    visibility:visible !important;
+  }
+  #lastUpdate .lu-dot{
+    display:block !important;
+    flex:0 0 6px !important;
+  }
+}
+</style>
+
 </head><body class="rt-loading">
 <div id="liveLoading">
   <div class="liveLoadingBox">
