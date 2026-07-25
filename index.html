@@ -94,7 +94,7 @@ header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#a80c1
 
 <style>
 #liveLoading{
-  position:fixed; inset:0; z-index:9999;
+  position:fixed; inset:0; z-index:2147483647;
   display:flex; align-items:center; justify-content:center;
   background:#fff;
   transition:opacity .22s ease, visibility .22s ease;
@@ -116,7 +116,13 @@ header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#a80c1
 @keyframes rtspin{to{transform:rotate(360deg)}}
 </style>
 
-</head><body>
+
+<style>
+body.rt-loading > *:not(#liveLoading){visibility:hidden !important}
+body.rt-loading #liveLoading{visibility:visible !important}
+</style>
+
+</head><body class="rt-loading">
 <div id="liveLoading">
   <div class="liveLoadingBox">
     <div class="liveLoadingLogo">05</div>
@@ -192,7 +198,10 @@ let today=new Date();today.setHours(0,0,0,0);let agendas=G.filter(visible).sort(
 let last=C.filter(x=>x.balance!==''&&x.balance!==null).slice(-1)[0]||{balance:0};homeBal.textContent=bal.textContent=rup(last.balance);inc.textContent=rup(C.reduce((s,x)=>s+Number(x.income||0),0));exp.textContent=rup(C.reduce((s,x)=>s+Number(x.expense||0),0));
 let tx=C.filter(x=>['ya','tampil'].includes(String(x.show).toLowerCase()));txs.innerHTML=(tx.length?tx:C).slice().reverse().map(x=>`<div class="tx"><span>${fd(x.date)}</span><span><b>${x.cat}</b><br>${x.desc}</span><b class="${Number(x.income)>0?'pos':'neg'}">${Number(x.income)>0?'+'+rup(x.income):'-'+rup(x.expense)}</b></div>`).join('');
 pop.innerHTML=P.map(x=>`<div class="stat"><small>${x.sub}</small><strong>${x.value||'-'}</strong><small>${x.cat}</small></div>`).join('');
-let sortedNotices=N.filter(visible).sort(nearestDateSort);notices.innerHTML=sortedNotices.map(noticeCard).join('')||'<p class="hint">Belum ada pengumuman.</p>';homeNotice.innerHTML=sortedNotices.length?noticeCard(sortedNotices[0]):'<p class="hint">Belum ada pengumuman terdekat.</p>';
+let sortedNotices=N.filter(visible).sort(nearestDateSort);
+notices.innerHTML=sortedNotices.map(noticeCard).join('')||'<p class="hint">Belum ada pengumuman.</p>';
+let activeNotices=sortedNotices.filter(x=>{let d=D(x.date);d.setHours(0,0,0,0);return d>=today;}).sort((a,b)=>D(a.date)-D(b.date));
+homeNotice.innerHTML=activeNotices.length?noticeCard(activeNotices[0]):'<article class="card notice"><div class="cb"><h4>📢 Belum ada pengumuman terbaru</h4><p>Informasi terbaru akan ditampilkan di sini.</p></div></article>';
 people.innerHTML=O.filter(visible).sort((a,b)=>Number(a.order||999)-Number(b.order||999)).map(x=>{let im=imgUrl(x.photo),wa=String(x.wa).replace(/\D/g,'');return `<article class="card person">${im?`<img class="pic" src="${im}" loading="lazy">`:''}<h4>${x.name}</h4><p>${x.role}</p>${wa?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${wa}">💬 WhatsApp</a>`:''}</article>`}).join('');
 suggestForm.addEventListener('submit',async e=>{e.preventDefault();if(!suggestForm.reportValidity())return;if(!API_URL){formMsg.textContent='Form sudah siap. Aktifkan Apps Script Web App agar data tersimpan ke spreadsheet.';return}let f=new FormData(suggestForm),payload={action:'suggestion',nama:f.get('nama'),gang:f.get('gang'),hp:f.get('hp'),saran:f.get('saran')};try{let r=await fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}),j=await r.json();if(!j.ok)throw Error();formMsg.textContent='Saran berhasil dikirim. Nomor: '+(j.id||'-');suggestForm.reset()}catch{formMsg.textContent='Saran belum berhasil dikirim. Silakan coba kembali.'}});
 
@@ -252,7 +261,10 @@ async function refreshFromLiveAPI(){
     txs.innerHTML=(tx.length?tx:C).slice().reverse().map(x=>`<div class="tx"><span>${fd(x.date)}</span><span><b>${x.cat}</b><br>${x.desc}</span><b class="${n(x.income)>0?"pos":"neg"}">${n(x.income)>0?"+"+rup(x.income):"-"+rup(x.expense)}</b></div>`).join("");
 
     pop.innerHTML=P.map(x=>`<div class="stat"><small>${x.sub}</small><strong>${x.value||"-"}</strong><small>${x.cat}</small></div>`).join("");
-    sortedNotices=N.filter(visible).sort(nearestDateSort);notices.innerHTML=sortedNotices.map(noticeCard).join("")||'<p class="hint">Belum ada pengumuman.</p>';homeNotice.innerHTML=sortedNotices.length?noticeCard(sortedNotices[0]):'<p class="hint">Belum ada pengumuman terdekat.</p>';
+    sortedNotices=N.filter(visible).sort(nearestDateSort);
+    notices.innerHTML=sortedNotices.map(noticeCard).join("")||'<p class="hint">Belum ada pengumuman.</p>';
+    activeNotices=sortedNotices.filter(x=>{let d=D(x.date);d.setHours(0,0,0,0);return d>=today;}).sort((a,b)=>D(a.date)-D(b.date));
+    homeNotice.innerHTML=activeNotices.length?noticeCard(activeNotices[0]):'<article class="card notice"><div class="cb"><h4>📢 Belum ada pengumuman terbaru</h4><p>Informasi terbaru akan ditampilkan di sini.</p></div></article>';
     people.innerHTML=O.filter(visible).sort((a,b)=>n(a.order||999)-n(b.order||999)).map(x=>{
       let im=imgUrl(x.photo),wa=s(x.wa).replace(/\D/g,"");
       return `<article class="card person">${im?`<img class="pic" src="${im}" loading="lazy">`:""}<h4>${x.name}</h4><p>${x.role}</p>${wa?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${wa}">💬 WhatsApp</a>`:""}</article>`;
@@ -261,11 +273,12 @@ async function refreshFromLiveAPI(){
     status("Data live berhasil.");
     const loader=document.getElementById("liveLoading");
     if(loader) loader.classList.add("done");
+    document.body.classList.remove("rt-loading");
   }catch(err){
     console.error("[RT05] API live gagal, memakai data fallback:",err);
     const loadingText=document.getElementById("liveLoadingText");
     if(loadingText) loadingText.textContent="Koneksi data live belum tersedia. Menampilkan data terakhir yang tersedia.";
-    setTimeout(()=>{const loader=document.getElementById("liveLoading");if(loader)loader.classList.add("done")},1200);
+    setTimeout(()=>{const loader=document.getElementById("liveLoading");if(loader)loader.classList.add("done");document.body.classList.remove("rt-loading")},1200);
   }
 }
 
@@ -317,7 +330,7 @@ setTimeout(function(){
   if(loader && !loader.classList.contains("done")){
     const t=document.getElementById("liveLoadingText");
     if(t)t.textContent="Koneksi lebih lambat dari biasanya. Menampilkan data terakhir yang tersedia.";
-    setTimeout(()=>loader.classList.add("done"),1000);
+    setTimeout(()=>{loader.classList.add("done");document.body.classList.remove("rt-loading")},1000);
   }
 },10000);
 </script>
