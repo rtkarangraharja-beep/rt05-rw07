@@ -273,9 +273,9 @@ suggestForm.addEventListener('submit',async e=>{e.preventDefault();if(!suggestFo
 function renderLastUpdate(value){
   const el=document.getElementById("lastUpdate");
   if(!el)return;
-  if(!value){el.innerHTML='<span class="lu-dot"></span><span>Waktu pembaruan belum tersedia</span>';return;}
+  if(!value){el.innerHTML='<span class="lu-dot"></span><span>Data website tersinkron</span>';return;}
   const d=new Date(value);
-  if(isNaN(d.getTime())){el.innerHTML='<span class="lu-dot"></span><span>Waktu pembaruan belum tersedia</span>';return;}
+  if(isNaN(d.getTime())){el.innerHTML='<span class="lu-dot"></span><span>Data website tersinkron</span>';return;}
   const tanggal=new Intl.DateTimeFormat("id-ID",{timeZone:"Asia/Jakarta",day:"numeric",month:"long",year:"numeric"}).format(d);
   const jam=new Intl.DateTimeFormat("id-ID",{timeZone:"Asia/Jakarta",hour:"2-digit",minute:"2-digit",hour12:false}).format(d).replace(".",":");
   el.innerHTML='<span class="lu-dot"></span><span>Terakhir diperbarui: '+tanggal+' • '+jam+' WIB</span>';
@@ -284,17 +284,17 @@ function renderLastUpdate(value){
 
 let HUT81=[];
 function hut81Val(x,keys){for(const k of keys){if(x&&x[k]!==undefined&&x[k]!==null&&String(x[k]).trim()!=="")return String(x[k]).trim()}return ""}
-function hut81Visible(x){const v=hut81Val(x,["STATUS","TAMPIL","status","tampil"]).toLowerCase();return !v||["ya","tampil","aktif","yes","true","1"].includes(v)}
+function hut81Visible(x){const v=hut81Val(x,["TAMPILKAN","Tampilkan","tampilkan","STATUS","TAMPIL","status","tampil"]).toLowerCase();return !v||["ya","tampil","aktif","yes","true","1"].includes(v)}
 function hut81Initials(name){return String(name||"").trim().split(/\s+/).slice(0,2).map(v=>v[0]||"").join("").toUpperCase()||"RI"}
 function hut81Escape(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function hut81IsActive(){return Date.now()<Date.UTC(2026,7,22,17,0,0)}
 function applyHut81Visibility(){const card=document.getElementById("hut81HomeCard");if(card)card.style.display=hut81IsActive()?"block":"none";if(!hut81IsActive()&&document.getElementById("hut81committee")?.classList.contains("on"))go("home")}
 function renderHut81Committee(rows){
  const root=document.getElementById("hut81CommitteeList");if(!root)return;
- const data=(Array.isArray(rows)?rows:[]).filter(hut81Visible).map((x,i)=>({name:hut81Val(x,["NAMA","Nama","nama","NAME","name"]),role:hut81Val(x,["JABATAN","Jabatan","jabatan","PERAN","Peran","peran","ROLE","role"]),group:hut81Val(x,["DIVISI","Divisi","divisi","SEKSI","Seksi","seksi","BIDANG","Bidang","bidang","KELOMPOK","kelompok"])||"Panitia",photo:hut81Val(x,["FOTO","Foto","foto","PHOTO","photo"]),order:Number(hut81Val(x,["URUTAN","Urutan","urutan","ORDER","order"])||9999),i})).filter(x=>x.name).sort((a,b)=>a.order-b.order||a.i-b.i);
+ const data=(Array.isArray(rows)?rows:[]).filter(hut81Visible).map((x,i)=>({name:hut81Val(x,["NAMA","Nama","nama","NAME","name"]),role:hut81Val(x,["JABATAN","Jabatan","jabatan","PERAN","Peran","peran","ROLE","role"]),note:hut81Val(x,["KETERANGAN","Keterangan","keterangan"]),group:hut81Val(x,["DIVISI","Divisi","divisi","SEKSI","Seksi","seksi","BIDANG","Bidang","bidang","KELOMPOK","kelompok"])||"Panitia",photo:hut81Val(x,["FOTO","Foto","foto","PHOTO","photo"]),order:Number(hut81Val(x,["URUTAN","Urutan","urutan","ORDER","order"])||9999),i})).filter(x=>x.name).sort((a,b)=>a.order-b.order||a.i-b.i);
  if(!data.length){root.innerHTML='<div class="hut81-empty">Susunan panitia sedang diperbarui.</div>';return}
  const groups=[];data.forEach(x=>{let g=groups.find(v=>v.name===x.group);if(!g){g={name:x.group,items:[]};groups.push(g)}g.items.push(x)});
- root.innerHTML=groups.map(g=>`<section class="hut81-group"><h4 class="hut81-group-title"><span>🇮🇩</span>${hut81Escape(g.name)}</h4><div class="hut81-members">${g.items.map(x=>{const im=x.photo?imgUrl(x.photo):"";return `<div class="hut81-member">${im?`<img class="hut81-avatar" src="${hut81Escape(im)}" loading="lazy" alt="">`:`<div class="hut81-avatar hut81-avatar-fallback">${hut81Escape(hut81Initials(x.name))}</div>`}<div><strong>${hut81Escape(x.name)}</strong><span>${hut81Escape(x.role||x.group)}</span></div></div>`}).join("")}</div></section>`).join("")
+ root.innerHTML=groups.map(g=>`<section class="hut81-group"><h4 class="hut81-group-title"><span>🇮🇩</span>${hut81Escape(g.name)}</h4><div class="hut81-members">${g.items.map(x=>{const im=x.photo?imgUrl(x.photo):"";return `<div class="hut81-member">${im?`<img class="hut81-avatar" src="${hut81Escape(im)}" loading="lazy" alt="">`:`<div class="hut81-avatar hut81-avatar-fallback">${hut81Escape(hut81Initials(x.name))}</div>`}<div><strong>${hut81Escape(x.name)}</strong><span>${hut81Escape(x.role||x.group)}${x.note?" • "+hut81Escape(x.note):""}</span></div></div>`}).join("")}</div></section>`).join("")
 }
 applyHut81Visibility();
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&document.activeElement?.id==="hut81HomeCard"){e.preventDefault();go("hut81committee")}});
@@ -314,7 +314,7 @@ async function refreshFromLiveAPI(){
     const arr=v=>Array.isArray(v)?v:[];
     const s=v=>v==null?"":String(v);
     const n=v=>Number(v||0);
-    HUT81.splice(0,HUT81.length,...arr(j.panitia||j.panitia_hut||j.panitiaHUT||j["panitia hut"]));
+    HUT81.splice(0,HUT81.length,...arr(j.panitia_hut_ri||j.panitia||j.panitia_hut||j.panitiaHUT||j["panitia hut"]));
     renderHut81Committee(HUT81);
     applyHut81Visibility();
 
