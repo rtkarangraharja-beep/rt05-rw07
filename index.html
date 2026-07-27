@@ -23,6 +23,24 @@ header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#a80c1
 .visitors{position:fixed;right:14px;bottom:14px;z-index:18;background:#19191b;color:#fff;padding:9px 12px;border-radius:12px;font-size:9.5px;box-shadow:0 5px 18px #0004;opacity:.92}.visitors b{font-size:11px}
 .bottom{display:none}.modal{display:none;position:fixed;inset:0;background:#000a;z-index:50;align-items:flex-end;justify-content:center}.modal.on{display:flex}.sheet{background:#fff;width:min(720px,100%);max-height:92vh;overflow:auto;padding:22px;border-radius:25px 25px 0 0}.sheetCover{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:15px;margin:10px 0 17px}.article{white-space:pre-line;line-height:1.75;color:#444;font-size:13.5px}.x{float:right;border:0;background:#eee;width:34px;height:34px;border-radius:50%;cursor:pointer}
 @media(max-width:760px){.app{max-width:500px}header{padding:12px 16px}.logo,.fallbackLogo{width:48px;height:48px}.brand h1{font-size:16px}.brand p{font-size:9px}.desktop{display:none}.hero{padding:23px 17px 18px}.hero h2{font-size:25px}.page{padding:18px 16px 92px}.grid{grid-template-columns:1fr}.balance{padding:19px}.balance strong{font-size:25px}.stats{grid-template-columns:1fr 1fr}.tx{grid-template-columns:75px 1fr 105px;font-size:10.5px}.bottom{display:grid;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(500px,100%);height:68px;background:#fff;border-top:1px solid var(--line);grid-template-columns:repeat(5,1fr);z-index:25;padding-bottom:env(safe-area-inset-bottom)}.bottom button{border:0;background:#fff;font-size:9px}.bottom b{display:block;font-size:18px;margin-bottom:2px}.visitors{right:9px;bottom:78px}}
+
+/* ===== HUT RI 81 • SUSUNAN PANITIA ===== */
+.hut81-home-card{position:relative;overflow:hidden;margin:22px 0 2px;padding:0;border:0;border-radius:22px;background:linear-gradient(135deg,#b40000 0%,#e31919 55%,#ff4b4b 100%);box-shadow:0 14px 34px rgba(180,0,0,.18);color:#fff;cursor:pointer}
+.hut81-home-card:before{content:"81";position:absolute;right:-8px;top:-27px;font-size:118px;line-height:1;font-weight:900;letter-spacing:-8px;color:rgba(255,255,255,.10);pointer-events:none}
+.hut81-home-card:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-90px;bottom:-125px;border:25px solid rgba(255,255,255,.09);pointer-events:none}
+.hut81-home-inner{position:relative;z-index:1;display:flex;align-items:center;gap:15px;padding:19px 18px}
+.hut81-flag{flex:0 0 52px;width:52px;height:52px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 8px 20px rgba(80,0,0,.18)}
+.hut81-home-text{min-width:0;flex:1}.hut81-home-text small{display:block;font-size:10px;font-weight:800;letter-spacing:1.3px;opacity:.86;margin-bottom:4px}.hut81-home-text strong{display:block;font-size:17px;line-height:1.25}.hut81-home-text span{display:block;font-size:12px;line-height:1.45;opacity:.9;margin-top:4px}.hut81-arrow{font-size:28px;font-weight:300;opacity:.9}
+.hut81-head{overflow:hidden;position:relative;border-radius:22px;padding:24px 20px;margin-bottom:20px;background:linear-gradient(135deg,#b40000,#ed1c24);color:#fff}
+.hut81-head:after{content:"81";position:absolute;right:-4px;bottom:-34px;font-size:126px;font-weight:900;letter-spacing:-8px;color:rgba(255,255,255,.09)}
+.hut81-kicker{font-size:10px;font-weight:900;letter-spacing:1.5px;opacity:.85}.hut81-head h3{position:relative;z-index:1;margin:5px 0 6px!important;font-size:23px}.hut81-head p{position:relative;z-index:1;margin:0;max-width:620px;font-size:13px;line-height:1.55;opacity:.92}.hut81-back{margin-bottom:15px}
+.hut81-groups{display:grid;gap:14px}.hut81-group{background:#fff;border:1px solid #ececec;border-radius:18px;padding:16px;box-shadow:0 7px 20px rgba(0,0,0,.045)}
+.hut81-group-title{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:13px;font-weight:900;color:#b40000;text-transform:uppercase;letter-spacing:.45px}
+.hut81-members{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.hut81-member{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:#f8f8f8;min-width:0}
+.hut81-avatar{width:42px;height:42px;flex:0 0 42px;border-radius:50%;object-fit:cover;background:#eee;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.hut81-avatar-fallback{display:flex;align-items:center;justify-content:center;font-weight:900;color:#b40000;background:#ffe8e8}.hut81-member div{min-width:0}.hut81-member strong{display:block;font-size:12px;line-height:1.3;word-break:break-word}.hut81-member span{display:block;margin-top:2px;font-size:10px;line-height:1.35;color:#777}.hut81-empty{padding:18px;border-radius:16px;background:#fafafa;color:#777;font-size:12px;text-align:center}
+@media(max-width:560px){.hut81-members{grid-template-columns:1fr}.hut81-home-inner{padding:17px 15px}.hut81-flag{width:48px;height:48px;flex-basis:48px}}
+
 </style>
 <style>
 @media(max-width:760px){
@@ -168,8 +186,8 @@ body.rt-loading #liveLoading{visibility:visible !important}
 <section id="home" class="page on"><div class="balance" onclick="openCash()"><div><small>SALDO KAS RT SAAT INI</small><strong id="homeBal">-</strong><div class="more">Lihat rincian kas →</div></div><div style="font-size:30px">›</div></div><a class="wa-community" href="https://chat.whatsapp.com/E4B3MlpaSkQIhyCWNcnMeI" target="_blank" rel="noopener">
 <div class="wa-community-icon">💬</div>
 <div class="wa-community-text"><small>COMMUNITY WHATSAPP</small><strong>Warga RT 05 RW 07</strong><span>Gabung ke grup komunikasi warga →</span></div>
-</a><div class="sectionhead"><h3>Pengumuman Terdekat</h3><button class="btn ghost" onclick="go('announcements')">Lihat Pengumuman</button></div><div id="homeNotice"></div><div class="sectionhead" style="margin-top:27px"><h3>Agenda Terdekat</h3><button class="btn ghost" onclick="go('agenda')">Lihat Agenda</button></div><div id="homeAgenda"></div><div class="sectionhead" style="margin-top:27px"><h3>Kegiatan Terbaru</h3><button class="btn ghost" onclick="go('activities')">Selengkapnya</button></div><div id="latest" class="grid"></div></section>
-<section id="activities" class="page"><div class="sectionhead"><h3>Arsip Kegiatan</h3></div><div class="filters"><select id="yearFilter" onchange="renderActivities()"></select><select id="monthFilter" onchange="renderActivities()"></select></div><div id="allActivities" class="grid"></div></section>
+</a><div id="hut81HomeCard" class="hut81-home-card" onclick="go('hut81committee')" role="button" tabindex="0" aria-label="Lihat susunan panitia HUT ke-81 RI"><div class="hut81-home-inner"><div class="hut81-flag">🇮🇩</div><div class="hut81-home-text"><small>HUT KE-81 KEMERDEKAAN RI • 2026</small><strong>Susunan Panitia HUT RI</strong><span>Kenali panitia yang menyiapkan rangkaian kegiatan kemerdekaan RT 05 RW 07.</span></div><div class="hut81-arrow">›</div></div></div><div class="sectionhead"><h3>Pengumuman Terdekat</h3><button class="btn ghost" onclick="go('announcements')">Lihat Pengumuman</button></div><div id="homeNotice"></div><div class="sectionhead" style="margin-top:27px"><h3>Agenda Terdekat</h3><button class="btn ghost" onclick="go('agenda')">Lihat Agenda</button></div><div id="homeAgenda"></div><div class="sectionhead" style="margin-top:27px"><h3>Kegiatan Terbaru</h3><button class="btn ghost" onclick="go('activities')">Selengkapnya</button></div><div id="latest" class="grid"></div></section>
+<section id="hut81committee" class="page"><button class="btn ghost hut81-back" onclick="go('home')">← Kembali ke Beranda</button><div class="hut81-head"><div class="hut81-kicker">DIRGAHAYU REPUBLIK INDONESIA • 81 TAHUN</div><h3>Susunan Panitia HUT RI</h3><p>Panitia Peringatan HUT ke-81 Kemerdekaan Republik Indonesia RT 005/RW 007, Perumahan Puri Mutiara Indah.</p></div><div id="hut81CommitteeList" class="hut81-groups"><div class="hut81-empty">Memuat susunan panitia...</div></div></section><section id="activities" class="page"><div class="sectionhead"><h3>Arsip Kegiatan</h3></div><div class="filters"><select id="yearFilter" onchange="renderActivities()"></select><select id="monthFilter" onchange="renderActivities()"></select></div><div id="allActivities" class="grid"></div></section>
 <section id="agenda" class="page"><h3>Agenda RT 05</h3><div id="allAgenda"></div></section>
 <section id="cash" class="page"><h3>Transparansi Kas RT</h3><div class="stats"><div class="stat"><small>Saldo Saat Ini</small><strong id="bal"></strong></div><div class="stat"><small>Total Pemasukan</small><strong id="inc"></strong></div><div class="stat"><small>Total Pengeluaran</small><strong id="exp"></strong></div></div><h3>Riwayat Transaksi</h3><div id="txs"></div></section>
 <section id="population" class="page"><h3>Statistik Kependudukan</h3><div id="pop" class="stats"></div></section>
@@ -263,6 +281,25 @@ function renderLastUpdate(value){
   el.innerHTML='<span class="lu-dot"></span><span>Terakhir diperbarui: '+tanggal+' • '+jam+' WIB</span>';
 }
 
+
+let HUT81=[];
+function hut81Val(x,keys){for(const k of keys){if(x&&x[k]!==undefined&&x[k]!==null&&String(x[k]).trim()!=="")return String(x[k]).trim()}return ""}
+function hut81Visible(x){const v=hut81Val(x,["STATUS","TAMPIL","status","tampil"]).toLowerCase();return !v||["ya","tampil","aktif","yes","true","1"].includes(v)}
+function hut81Initials(name){return String(name||"").trim().split(/\s+/).slice(0,2).map(v=>v[0]||"").join("").toUpperCase()||"RI"}
+function hut81Escape(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function hut81IsActive(){return Date.now()<Date.UTC(2026,7,22,17,0,0)}
+function applyHut81Visibility(){const card=document.getElementById("hut81HomeCard");if(card)card.style.display=hut81IsActive()?"block":"none";if(!hut81IsActive()&&document.getElementById("hut81committee")?.classList.contains("on"))go("home")}
+function renderHut81Committee(rows){
+ const root=document.getElementById("hut81CommitteeList");if(!root)return;
+ const data=(Array.isArray(rows)?rows:[]).filter(hut81Visible).map((x,i)=>({name:hut81Val(x,["NAMA","Nama","nama","NAME","name"]),role:hut81Val(x,["JABATAN","Jabatan","jabatan","PERAN","Peran","peran","ROLE","role"]),group:hut81Val(x,["DIVISI","Divisi","divisi","SEKSI","Seksi","seksi","BIDANG","Bidang","bidang","KELOMPOK","kelompok"])||"Panitia",photo:hut81Val(x,["FOTO","Foto","foto","PHOTO","photo"]),order:Number(hut81Val(x,["URUTAN","Urutan","urutan","ORDER","order"])||9999),i})).filter(x=>x.name).sort((a,b)=>a.order-b.order||a.i-b.i);
+ if(!data.length){root.innerHTML='<div class="hut81-empty">Susunan panitia sedang diperbarui.</div>';return}
+ const groups=[];data.forEach(x=>{let g=groups.find(v=>v.name===x.group);if(!g){g={name:x.group,items:[]};groups.push(g)}g.items.push(x)});
+ root.innerHTML=groups.map(g=>`<section class="hut81-group"><h4 class="hut81-group-title"><span>🇮🇩</span>${hut81Escape(g.name)}</h4><div class="hut81-members">${g.items.map(x=>{const im=x.photo?imgUrl(x.photo):"";return `<div class="hut81-member">${im?`<img class="hut81-avatar" src="${hut81Escape(im)}" loading="lazy" alt="">`:`<div class="hut81-avatar hut81-avatar-fallback">${hut81Escape(hut81Initials(x.name))}</div>`}<div><strong>${hut81Escape(x.name)}</strong><span>${hut81Escape(x.role||x.group)}</span></div></div>`}).join("")}</div></section>`).join("")
+}
+applyHut81Visibility();
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&document.activeElement?.id==="hut81HomeCard"){e.preventDefault();go("hut81committee")}});
+setInterval(applyHut81Visibility,60000);
+
 let rtLiveLoadStarted=Date.now();
 async function refreshFromLiveAPI(){
   const status=(msg)=>console.log("[RT05]",msg);
@@ -277,6 +314,9 @@ async function refreshFromLiveAPI(){
     const arr=v=>Array.isArray(v)?v:[];
     const s=v=>v==null?"":String(v);
     const n=v=>Number(v||0);
+    HUT81.splice(0,HUT81.length,...arr(j.panitia||j.panitia_hut||j.panitiaHUT||j["panitia hut"]));
+    renderHut81Committee(HUT81);
+    applyHut81Visibility();
 
     A.splice(0,A.length,...arr(j.kegiatan).map(x=>({
       id:s(x.ID),date:s(x.TANGGAL),title:s(x["JUDUL KEGIATAN"]),summary:s(x.RINGKASAN),
