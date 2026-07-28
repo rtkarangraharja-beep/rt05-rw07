@@ -248,15 +248,22 @@ body.rt-loading #liveLoading{visibility:visible !important}
       <h3 style="margin:3px 0 0">Ringkasan Bulanan</h3>
     </div>
     <div class="cash-filter-controls">
+      <select id="cashPeriodFilter" onchange="handleCashPeriodChange()">
+        <option value="1">1 Bulan</option>
+        <option value="3">3 Bulan</option>
+        <option value="6">6 Bulan</option>
+        <option value="9">9 Bulan</option>
+        <option value="12">1 Tahun</option>
+      </select>
       <select id="cashMonthFilter" onchange="renderCashDashboard()"></select>
       <select id="cashYearFilter" onchange="renderCashDashboard()"></select>
     </div>
   </div>
 
   <div class="stats cash-month-stats">
-    <div class="stat cash-stat-in"><small>Pemasukan Bulan Ini</small><strong id="cashMonthIncome">Rp 0</strong></div>
-    <div class="stat cash-stat-out"><small>Pengeluaran Bulan Ini</small><strong id="cashMonthExpense">Rp 0</strong></div>
-    <div class="stat cash-stat-balance"><small>Saldo Akhir Bulan</small><strong id="cashMonthBalance">Rp 0</strong></div>
+    <div class="stat cash-stat-in"><small>Pemasukan Periode</small><strong id="cashMonthIncome">Rp 0</strong></div>
+    <div class="stat cash-stat-out"><small>Pengeluaran Periode</small><strong id="cashMonthExpense">Rp 0</strong></div>
+    <div class="stat cash-stat-balance"><small>Saldo Akhir Periode</small><strong id="cashMonthBalance">Rp 0</strong></div>
   </div>
 
   <div class="cash-dashboard-grid">
@@ -347,30 +354,47 @@ function initCashFilters(){
   yf.value=String(latestDate.getFullYear());
 }
 
+function handleCashPeriodChange(){
+  renderCashDashboard();
+}
+
 function renderCashDashboard(){
   if(!cashUnlocked && !C.length)return;
+  const pf=document.getElementById('cashPeriodFilter');
   const mf=document.getElementById('cashMonthFilter');
   const yf=document.getElementById('cashYearFilter');
   if(!mf||!yf)return;
 
+  const months=Math.max(1,Number(pf?.value||1));
   const month=Number(mf.value), year=Number(yf.value);
-  const periodRows=C.filter(x=>x.date && D(x.date).getFullYear()===year && D(x.date).getMonth()===month);
+  const endDate=new Date(year,month+1,0,23,59,59,999);
+  const startDate=new Date(year,month-(months-1),1,0,0,0,0);
+
+  const periodRows=C.filter(x=>{
+    if(!x.date)return false;
+    const d=D(x.date);
+    return d>=startDate && d<=endDate;
+  });
   const visibleRows=periodRows.filter(x=>['ya','tampil'].includes(String(x.show||'').toLowerCase()));
   const rowsToShow=visibleRows.length?visibleRows:periodRows;
 
   const income=periodRows.reduce((a,x)=>a+Number(x.income||0),0);
   const expense=periodRows.reduce((a,x)=>a+Number(x.expense||0),0);
 
-  const chronological=C.filter(x=>x.date && D(x.date)<=new Date(year,month+1,0,23,59,59))
+  const chronological=C.filter(x=>x.date && D(x.date)<=endDate)
     .slice().sort((a,b)=>D(a.date)-D(b.date));
-  const monthChrono=periodRows.slice().sort((a,b)=>D(a.date)-D(b.date));
-  const balanceSource=monthChrono.length?monthChrono:chronological;
-  const monthBalance=balanceSource.length?Number(balanceSource[balanceSource.length-1].balance||0):0;
+  const periodChrono=periodRows.slice().sort((a,b)=>D(a.date)-D(b.date));
+  const balanceSource=periodChrono.length?periodChrono:chronological;
+  const periodBalance=balanceSource.length?Number(balanceSource[balanceSource.length-1].balance||0):0;
 
-  const label=new Date(year,month,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  const fmtMonth=d=>d.toLocaleDateString('id-ID',{month:'short',year:'numeric'});
+  const label=months===1
+    ? new Date(year,month,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'})
+    : `${fmtMonth(startDate)} – ${fmtMonth(endDate)}`;
+
   document.getElementById('cashMonthIncome').textContent=rup(income);
   document.getElementById('cashMonthExpense').textContent=rup(expense);
-  document.getElementById('cashMonthBalance').textContent=rup(monthBalance);
+  document.getElementById('cashMonthBalance').textContent=rup(periodBalance);
   ['cashCategoryPeriod','cashFlowPeriod','cashHistoryPeriod'].forEach(id=>{
     const el=document.getElementById(id); if(el)el.textContent=label;
   });
@@ -401,7 +425,7 @@ function renderCashDashboard(){
       <div class="cash-flow-top"><span>Pengeluaran</span><b class="neg">${rup(expense)}</b></div>
       <div class="cash-flow-track"><div class="cash-flow-bar cash-flow-out" style="width:${expense?Math.max(2,expense/maxFlow*100):0}%"></div></div>
     </div>
-    <div class="cash-flow-net"><span>Arus kas bersih bulan ini</span><b class="${net>=0?'pos':'neg'}">${net>=0?'+':''}${rup(net)}</b></div>`;
+    <div class="cash-flow-net"><span>Arus kas bersih periode</span><b class="${net>=0?'pos':'neg'}">${net>=0?'+':''}${rup(net)}</b></div>`;
 
   txs.innerHTML=rowsToShow.slice().sort((a,b)=>D(b.date)-D(a.date)).map(x=>`
     <div class="tx">
