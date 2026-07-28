@@ -177,7 +177,7 @@ body.rt-loading #liveLoading{visibility:visible !important}
 .cash-overall{margin-bottom:18px}
 .cash-filter-card{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#19191b;color:#fff;border-radius:18px;padding:16px 18px;margin:18px 0 14px;box-shadow:0 8px 24px #00000012}
 .cash-kicker,.cash-panel-head small,.cash-history-head small{font-size:9px;font-weight:900;letter-spacing:1px;opacity:.68}
-.cash-filter-controls{display:flex;gap:8px;flex-wrap:wrap}
+.cash-filter-controls{display:flex;gap:8px;flex-wrap:wrap}.cash-filter-controls label{display:grid;gap:4px}.cash-filter-controls label span{font-size:8px;font-weight:900;letter-spacing:.7px;opacity:.65;text-transform:uppercase}
 .cash-filter-controls select{border:1px solid #ffffff2e;background:#ffffff12;color:#fff;border-radius:11px;padding:9px 12px;font:inherit;font-size:11px;font-weight:800;outline:none}
 .cash-filter-controls select option{color:#19191b;background:#fff}
 .cash-month-stats{margin-bottom:18px}
@@ -247,16 +247,10 @@ body.rt-loading #liveLoading{visibility:visible !important}
       <small class="cash-kicker">LAPORAN PERIODE</small>
       <h3 style="margin:3px 0 0">Ringkasan Bulanan</h3>
     </div>
-    <div class="cash-filter-controls">
-      <select id="cashPeriodFilter" onchange="handleCashPeriodChange()">
-        <option value="1">1 Bulan</option>
-        <option value="3">3 Bulan</option>
-        <option value="6">6 Bulan</option>
-        <option value="9">9 Bulan</option>
-        <option value="12">1 Tahun</option>
-      </select>
-      <select id="cashMonthFilter" onchange="renderCashDashboard()"></select>
-      <select id="cashYearFilter" onchange="renderCashDashboard()"></select>
+    <div class="cash-filter-controls cash-range-controls">
+      <label><span>Dari Bulan</span><select id="cashStartMonthFilter" onchange="renderCashDashboard()"></select></label>
+      <label><span>Sampai Bulan</span><select id="cashEndMonthFilter" onchange="renderCashDashboard()"></select></label>
+      <label><span>Tahun</span><select id="cashYearFilter" onchange="renderCashDashboard()"></select></label>
     </div>
   </div>
 
@@ -338,101 +332,70 @@ function renderCashRows(rows){
 }
 
 function initCashFilters(){
-  const mf=document.getElementById('cashMonthFilter');
+  const sf=document.getElementById('cashStartMonthFilter');
+  const ef=document.getElementById('cashEndMonthFilter');
   const yf=document.getElementById('cashYearFilter');
-  if(!mf||!yf||!C.length)return;
+  if(!sf||!ef||!yf||!C.length)return;
 
   const valid=C.filter(x=>x.date && !isNaN(D(x.date)));
   const years=[...new Set(valid.map(x=>D(x.date).getFullYear()))].sort((a,b)=>b-a);
   const latest=valid.slice().sort((a,b)=>D(b.date)-D(a.date))[0];
   const latestDate=latest?D(latest.date):new Date();
+  const opts=Array.from({length:12},(_,m)=>`<option value="${m}">${new Date(2026,m,1).toLocaleDateString('id-ID',{month:'long'})}</option>`).join('');
 
-  mf.innerHTML=Array.from({length:12},(_,m)=>`<option value="${m}">${new Date(2026,m,1).toLocaleDateString('id-ID',{month:'long'})}</option>`).join('');
+  sf.innerHTML=opts; ef.innerHTML=opts;
   yf.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
-
-  mf.value=String(latestDate.getMonth());
+  sf.value=String(latestDate.getMonth());
+  ef.value=String(latestDate.getMonth());
   yf.value=String(latestDate.getFullYear());
-}
-
-function handleCashPeriodChange(){
-  renderCashDashboard();
 }
 
 function renderCashDashboard(){
   if(!cashUnlocked && !C.length)return;
-  const pf=document.getElementById('cashPeriodFilter');
-  const mf=document.getElementById('cashMonthFilter');
+  const sf=document.getElementById('cashStartMonthFilter');
+  const ef=document.getElementById('cashEndMonthFilter');
   const yf=document.getElementById('cashYearFilter');
-  if(!mf||!yf)return;
+  if(!sf||!ef||!yf)return;
 
-  const months=Math.max(1,Number(pf?.value||1));
-  const month=Number(mf.value), year=Number(yf.value);
-  const endDate=new Date(year,month+1,0,23,59,59,999);
-  const startDate=new Date(year,month-(months-1),1,0,0,0,0);
-
-  const periodRows=C.filter(x=>{
-    if(!x.date)return false;
-    const d=D(x.date);
-    return d>=startDate && d<=endDate;
-  });
-  const visibleRows=periodRows.filter(x=>['ya','tampil'].includes(String(x.show||'').toLowerCase()));
-  const rowsToShow=visibleRows.length?visibleRows:periodRows;
-
+  let sm=Number(sf.value), em=Number(ef.value), year=Number(yf.value);
+  if(sm>em){em=sm;ef.value=String(em)}
+  const startDate=new Date(year,sm,1);
+  const endDate=new Date(year,em+1,0,23,59,59,999);
+  const periodRows=C.filter(x=>x.date && D(x.date)>=startDate && D(x.date)<=endDate);
+  const visible=periodRows.filter(x=>['ya','tampil'].includes(String(x.show||'').toLowerCase()));
+  const rowsToShow=visible.length?visible:periodRows;
   const income=periodRows.reduce((a,x)=>a+Number(x.income||0),0);
   const expense=periodRows.reduce((a,x)=>a+Number(x.expense||0),0);
 
-  const chronological=C.filter(x=>x.date && D(x.date)<=endDate)
-    .slice().sort((a,b)=>D(a.date)-D(b.date));
-  const periodChrono=periodRows.slice().sort((a,b)=>D(a.date)-D(b.date));
-  const balanceSource=periodChrono.length?periodChrono:chronological;
-  const periodBalance=balanceSource.length?Number(balanceSource[balanceSource.length-1].balance||0):0;
+  const beforeEnd=C.filter(x=>x.date&&D(x.date)<=endDate).slice().sort((a,b)=>D(a.date)-D(b.date));
+  const periodSorted=periodRows.slice().sort((a,b)=>D(a.date)-D(b.date));
+  const bs=periodSorted.length?periodSorted:beforeEnd;
+  const balance=bs.length?Number(bs[bs.length-1].balance||0):0;
 
-  const fmtMonth=d=>d.toLocaleDateString('id-ID',{month:'short',year:'numeric'});
-  const label=months===1
-    ? new Date(year,month,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'})
-    : `${fmtMonth(startDate)} – ${fmtMonth(endDate)}`;
-
+  const mn=m=>new Date(year,m,1).toLocaleDateString('id-ID',{month:'long'});
+  const label=sm===em?`${mn(sm)} ${year}`:`${mn(sm)} – ${mn(em)} ${year}`;
   document.getElementById('cashMonthIncome').textContent=rup(income);
   document.getElementById('cashMonthExpense').textContent=rup(expense);
-  document.getElementById('cashMonthBalance').textContent=rup(periodBalance);
-  ['cashCategoryPeriod','cashFlowPeriod','cashHistoryPeriod'].forEach(id=>{
-    const el=document.getElementById(id); if(el)el.textContent=label;
-  });
+  document.getElementById('cashMonthBalance').textContent=rup(balance);
+  ['cashCategoryPeriod','cashFlowPeriod','cashHistoryPeriod'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=label});
 
   const cats={};
-  periodRows.forEach(x=>{
-    const val=Number(x.expense||0);
-    if(val>0){const k=x.cat||'Lain-Lain';cats[k]=(cats[k]||0)+val}
-  });
-  const catEntries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
-  const maxCat=catEntries[0]?.[1]||1;
-  const catRoot=document.getElementById('cashCategoryChart');
-  catRoot.innerHTML=catEntries.length?catEntries.map(([name,val])=>`
-    <div class="cash-cat-row">
-      <span class="cash-cat-name" title="${name.replace(/"/g,'&quot;')}">${name}</span>
-      <div class="cash-cat-track"><div class="cash-cat-bar" style="width:${Math.max(2,val/maxCat*100)}%"></div></div>
-      <span class="cash-cat-value">${rup(val)}</span>
-    </div>`).join(''):'<div class="cash-empty">Belum ada pengeluaran pada periode ini.</div>';
+  periodRows.forEach(x=>{const v=Number(x.expense||0);if(v>0){const k=x.cat||'Lain-Lain';cats[k]=(cats[k]||0)+v}});
+  const ce=Object.entries(cats).sort((a,b)=>b[1]-a[1]), max=ce[0]?.[1]||1;
+  document.getElementById('cashCategoryChart').innerHTML=ce.length?ce.map(([n,v])=>`
+    <div class="cash-cat-row"><span class="cash-cat-name">${n}</span>
+    <div class="cash-cat-track"><div class="cash-cat-bar" style="width:${Math.max(2,v/max*100)}%"></div></div>
+    <span class="cash-cat-value">${rup(v)}</span></div>`).join(''):'<div class="cash-empty">Belum ada pengeluaran pada periode ini.</div>';
 
-  const maxFlow=Math.max(income,expense,1);
-  const net=income-expense;
+  const mf=Math.max(income,expense,1), net=income-expense;
   document.getElementById('cashFlowChart').innerHTML=`
-    <div class="cash-flow-item">
-      <div class="cash-flow-top"><span>Pemasukan</span><b class="pos">${rup(income)}</b></div>
-      <div class="cash-flow-track"><div class="cash-flow-bar cash-flow-in" style="width:${income?Math.max(2,income/maxFlow*100):0}%"></div></div>
-    </div>
-    <div class="cash-flow-item">
-      <div class="cash-flow-top"><span>Pengeluaran</span><b class="neg">${rup(expense)}</b></div>
-      <div class="cash-flow-track"><div class="cash-flow-bar cash-flow-out" style="width:${expense?Math.max(2,expense/maxFlow*100):0}%"></div></div>
-    </div>
+    <div class="cash-flow-item"><div class="cash-flow-top"><span>Pemasukan</span><b class="pos">${rup(income)}</b></div><div class="cash-flow-track"><div class="cash-flow-bar cash-flow-in" style="width:${income?Math.max(2,income/mf*100):0}%"></div></div></div>
+    <div class="cash-flow-item"><div class="cash-flow-top"><span>Pengeluaran</span><b class="neg">${rup(expense)}</b></div><div class="cash-flow-track"><div class="cash-flow-bar cash-flow-out" style="width:${expense?Math.max(2,expense/mf*100):0}%"></div></div></div>
     <div class="cash-flow-net"><span>Arus kas bersih periode</span><b class="${net>=0?'pos':'neg'}">${net>=0?'+':''}${rup(net)}</b></div>`;
 
   txs.innerHTML=rowsToShow.slice().sort((a,b)=>D(b.date)-D(a.date)).map(x=>`
-    <div class="tx">
-      <span>${fd(x.date)}</span>
-      <span><b>${x.cat||'-'}</b><br>${x.desc||''}</span>
-      <b class="${Number(x.income)>0?'pos':'neg'}">${Number(x.income)>0?'+'+rup(x.income):'-'+rup(x.expense)}</b>
-    </div>`).join('')||'<p class="hint">Belum ada transaksi pada periode ini.</p>';
+    <div class="tx"><span>${fd(x.date)}</span><span><b>${x.cat||'-'}</b><br>${x.desc||''}</span>
+    <b class="${Number(x.income)>0?'pos':'neg'}">${Number(x.income)>0?'+'+rup(x.income):'-'+rup(x.expense)}</b></div>`).join('')||'<p class="hint">Belum ada transaksi pada periode ini.</p>';
 }
 
 async function submitCashPin(){const pin=cashPinInput.value.trim();if(!pin){cashPinMsg.textContent='Masukkan PIN warga.';return}cashPinBtn.disabled=true;cashPinBtn.textContent='Memeriksa...';cashPinMsg.textContent='';try{const r=await fetch(API_URL+'?action=kas&pin='+encodeURIComponent(pin),{cache:'no-store'}),j=await r.json();if(!j.ok||!j.authorized){cashPinMsg.textContent=j.message||'PIN warga salah.';cashPinInput.select();return}renderCashRows(j.kas);cashUnlocked=true;closeCashPin();go('cash')}catch(e){cashPinMsg.textContent='Data kas belum dapat dibuka. Coba lagi.'}finally{cashPinBtn.disabled=false;cashPinBtn.textContent='Buka Data Kas'}}
