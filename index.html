@@ -171,6 +171,50 @@ body.rt-loading #liveLoading{visibility:visible !important}
 }
 </style>
 
+
+<style>
+/* ===== DASHBOARD KAS RT 05 ===== */
+.cash-overall{margin-bottom:18px}
+.cash-filter-card{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#19191b;color:#fff;border-radius:18px;padding:16px 18px;margin:18px 0 14px;box-shadow:0 8px 24px #00000012}
+.cash-kicker,.cash-panel-head small,.cash-history-head small{font-size:9px;font-weight:900;letter-spacing:1px;opacity:.68}
+.cash-filter-controls{display:flex;gap:8px;flex-wrap:wrap}
+.cash-filter-controls select{border:1px solid #ffffff2e;background:#ffffff12;color:#fff;border-radius:11px;padding:9px 12px;font:inherit;font-size:11px;font-weight:800;outline:none}
+.cash-filter-controls select option{color:#19191b;background:#fff}
+.cash-month-stats{margin-bottom:18px}
+.cash-month-stats .stat{position:relative;overflow:hidden}
+.cash-month-stats .stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px}
+.cash-stat-in:before{background:#198754}.cash-stat-out:before{background:#d62828}.cash-stat-balance:before{background:#19191b}
+.cash-dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 24px}
+.cash-panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 5px 18px #0000000a;min-width:0}
+.cash-panel-head,.cash-history-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.cash-panel-head h3,.cash-history-head h3{margin:3px 0 0!important;font-size:15px}
+.cash-panel-head>span,.cash-history-head>span{font-size:9.5px;color:var(--mut);white-space:nowrap}
+.cash-category-chart{display:grid;gap:12px}
+.cash-cat-row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(110px,2fr) auto;align-items:center;gap:10px;font-size:10px}
+.cash-cat-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cash-cat-track{height:8px;background:#f0f0f0;border-radius:99px;overflow:hidden}
+.cash-cat-bar{height:100%;background:#d62828;border-radius:99px;min-width:2px}
+.cash-cat-value{font-weight:900;font-size:9.5px;white-space:nowrap}
+.cash-empty{padding:24px 8px;text-align:center;color:var(--mut);font-size:11px;background:#fafafa;border-radius:13px}
+.cash-flow-chart{display:grid;gap:14px}
+.cash-flow-item{display:grid;gap:7px}
+.cash-flow-top{display:flex;justify-content:space-between;gap:10px;font-size:10px}
+.cash-flow-top span{font-weight:800}.cash-flow-top b{font-size:10px}
+.cash-flow-track{height:13px;background:#f0f0f0;border-radius:99px;overflow:hidden}
+.cash-flow-bar{height:100%;border-radius:99px;min-width:2px}
+.cash-flow-in{background:#198754}.cash-flow-out{background:#d62828}
+.cash-flow-net{margin-top:4px;padding:13px;border-radius:13px;background:#f8f8f8;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:10px}
+.cash-flow-net b{font-size:13px}
+.cash-history-head{margin-top:2px;margin-bottom:10px}
+@media(max-width:760px){
+  .cash-filter-card{align-items:flex-start;flex-direction:column;padding:15px}
+  .cash-filter-controls{width:100%}
+  .cash-filter-controls select{flex:1;min-width:0}
+  .cash-dashboard-grid{grid-template-columns:1fr}
+  .cash-cat-row{grid-template-columns:minmax(80px,1fr) minmax(80px,1.5fr) auto;gap:7px}
+}
+</style>
+
 </head><body class="rt-loading">
 <div id="liveLoading">
   <div class="liveLoadingBox">
@@ -189,7 +233,56 @@ body.rt-loading #liveLoading{visibility:visible !important}
 </a><div id="hut81HomeCard" class="hut81-home-card" onclick="go('hut81committee')" role="button" tabindex="0" aria-label="Lihat susunan panitia HUT ke-81 RI"><div class="hut81-home-inner"><div class="hut81-flag">🇮🇩</div><div class="hut81-home-text"><small>HUT KE-81 KEMERDEKAAN RI • 2026</small><strong>Susunan Panitia HUT RI</strong><span>Kenali panitia yang menyiapkan rangkaian kegiatan kemerdekaan RT 05 RW 07.</span></div><div class="hut81-arrow">›</div></div></div><div class="sectionhead"><h3>Pengumuman Terdekat</h3><button class="btn ghost" onclick="go('announcements')">Lihat Pengumuman</button></div><div id="homeNotice"></div><div class="sectionhead" style="margin-top:27px"><h3>Agenda Terdekat</h3><button class="btn ghost" onclick="go('agenda')">Lihat Agenda</button></div><div id="homeAgenda"></div><div class="sectionhead" style="margin-top:27px"><h3>Kegiatan Terbaru</h3><button class="btn ghost" onclick="go('activities')">Selengkapnya</button></div><div id="latest" class="grid"></div></section>
 <section id="hut81committee" class="page"><button class="btn ghost hut81-back" onclick="go('home')">← Kembali ke Beranda</button><div class="hut81-head"><div class="hut81-kicker">DIRGAHAYU REPUBLIK INDONESIA • 81 TAHUN</div><h3>Susunan Panitia HUT RI</h3><p>Panitia Peringatan HUT ke-81 Kemerdekaan Republik Indonesia RT 005/RW 007, Perumahan Puri Mutiara Indah.</p></div><div id="hut81CommitteeList" class="hut81-groups"><div class="hut81-empty">Memuat susunan panitia...</div></div></section><section id="activities" class="page"><div class="sectionhead"><h3>Arsip Kegiatan</h3></div><div class="filters"><select id="yearFilter" onchange="renderActivities()"></select><select id="monthFilter" onchange="renderActivities()"></select></div><div id="allActivities" class="grid"></div></section>
 <section id="agenda" class="page"><h3>Agenda RT 05</h3><div id="allAgenda"></div></section>
-<section id="cash" class="page"><h3>Transparansi Kas RT</h3><div class="stats"><div class="stat"><small>Saldo Saat Ini</small><strong id="bal"></strong></div><div class="stat"><small>Total Pemasukan</small><strong id="inc"></strong></div><div class="stat"><small>Total Pengeluaran</small><strong id="exp"></strong></div></div><h3>Riwayat Transaksi</h3><div id="txs"></div></section>
+<section id="cash" class="page">
+  <h3>Transparansi Kas RT</h3>
+
+  <div class="stats cash-overall">
+    <div class="stat"><small>Saldo Saat Ini</small><strong id="bal"></strong></div>
+    <div class="stat"><small>Total Pemasukan</small><strong id="inc"></strong></div>
+    <div class="stat"><small>Total Pengeluaran</small><strong id="exp"></strong></div>
+  </div>
+
+  <div class="cash-filter-card">
+    <div>
+      <small class="cash-kicker">LAPORAN PERIODE</small>
+      <h3 style="margin:3px 0 0">Ringkasan Bulanan</h3>
+    </div>
+    <div class="cash-filter-controls">
+      <select id="cashMonthFilter" onchange="renderCashDashboard()"></select>
+      <select id="cashYearFilter" onchange="renderCashDashboard()"></select>
+    </div>
+  </div>
+
+  <div class="stats cash-month-stats">
+    <div class="stat cash-stat-in"><small>Pemasukan Bulan Ini</small><strong id="cashMonthIncome">Rp 0</strong></div>
+    <div class="stat cash-stat-out"><small>Pengeluaran Bulan Ini</small><strong id="cashMonthExpense">Rp 0</strong></div>
+    <div class="stat cash-stat-balance"><small>Saldo Akhir Bulan</small><strong id="cashMonthBalance">Rp 0</strong></div>
+  </div>
+
+  <div class="cash-dashboard-grid">
+    <div class="cash-panel">
+      <div class="cash-panel-head">
+        <div><small>PENGELUARAN</small><h3>Per Kategori</h3></div>
+        <span id="cashCategoryPeriod"></span>
+      </div>
+      <div id="cashCategoryChart" class="cash-category-chart"></div>
+    </div>
+
+    <div class="cash-panel">
+      <div class="cash-panel-head">
+        <div><small>ARUS KAS</small><h3>Pemasukan vs Pengeluaran</h3></div>
+        <span id="cashFlowPeriod"></span>
+      </div>
+      <div id="cashFlowChart" class="cash-flow-chart"></div>
+    </div>
+  </div>
+
+  <div class="cash-history-head">
+    <div><small>TRANSAKSI</small><h3>Riwayat Transaksi</h3></div>
+    <span id="cashHistoryPeriod"></span>
+  </div>
+  <div id="txs"></div>
+</section>
 <section id="population" class="page"><h3>Statistik Kependudukan</h3><div id="pop" class="stats"></div></section>
 <section id="announcements" class="page"><h3>Pengumuman</h3><div id="notices"></div></section>
 <section id="officers" class="page"><h3>Pengurus RT 05</h3><div id="people" class="grid"></div></section>
@@ -218,10 +311,106 @@ function driveId(u){u=String(u||'');let m=u.match(/\/d\/([^/?]+)/)||u.match(/[?&
 function imgUrl(u){let id=driveId(u);return id?`https://drive.google.com/thumbnail?id=${id}&sz=w1200`:u}
 let cashUnlocked=false;
 function go(id){if(id==='cash'&&!cashUnlocked){openCash();return}document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0)}
-function showCashLocked(){cashUnlocked=false;if(window.homeBal)homeBal.textContent='Rp •••••••';if(window.bal)bal.textContent='Rp •••••••';if(window.inc)inc.textContent='Rp •••••••';if(window.exp)exp.textContent='Rp •••••••';if(window.txs)txs.innerHTML='<p class="hint">🔒 Data kas khusus warga RT 05. Masukkan PIN untuk melihat rincian.</p>'}
+function showCashLocked(){cashUnlocked=false;if(window.homeBal)homeBal.textContent='Rp •••••••';if(window.bal)bal.textContent='Rp •••••••';if(window.inc)inc.textContent='Rp •••••••';if(window.exp)exp.textContent='Rp •••••••';if(window.txs)txs.innerHTML='<p class="hint">🔒 Data kas khusus warga RT 05. Masukkan PIN untuk melihat rincian.</p>';['cashMonthIncome','cashMonthExpense','cashMonthBalance'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='Rp •••••••'})}
 function openCash(){if(cashUnlocked){go('cash');return}cashPinMsg.textContent='';cashPinInput.value='';cashPinModal.classList.add('on');setTimeout(()=>cashPinInput.focus(),100)}
 function closeCashPin(){cashPinModal.classList.remove('on')}
-function renderCashRows(rows){const s=v=>v==null?'':String(v),n=v=>Number(v||0);C.splice(0,C.length,...(Array.isArray(rows)?rows:[]).map(x=>({id:s(x.ID),date:s(x.TANGGAL),type:s(x.JENIS),cat:s(x.KATEGORI),desc:s(x.KETERANGAN),income:n(x.PEMASUKAN),expense:n(x.PENGELUARAN),balance:n(x.SALDO),show:s(x.TAMPILKAN)})));const last=C.filter(x=>x.balance!==''&&x.balance!==null).slice(-1)[0]||{balance:0};homeBal.textContent=bal.textContent=rup(last.balance);inc.textContent=rup(C.reduce((a,x)=>a+n(x.income),0));exp.textContent=rup(C.reduce((a,x)=>a+n(x.expense),0));const tx=C.filter(x=>['ya','tampil'].includes(s(x.show).toLowerCase()));txs.innerHTML=(tx.length?tx:C).slice().reverse().map(x=>`<div class="tx"><span>${fd(x.date)}</span><span><b>${x.cat}</b><br>${x.desc}</span><b class="${n(x.income)>0?'pos':'neg'}">${n(x.income)>0?'+'+rup(x.income):'-'+rup(x.expense)}</b></div>`).join('')||'<p class="hint">Belum ada transaksi.</p>'}
+function renderCashRows(rows){
+  const sv=v=>v==null?'':String(v), nv=v=>Number(v||0);
+  C.splice(0,C.length,...(Array.isArray(rows)?rows:[]).map(x=>({
+    id:sv(x.ID),date:sv(x.TANGGAL),type:sv(x.JENIS),cat:sv(x.KATEGORI),desc:sv(x.KETERANGAN),
+    income:nv(x.PEMASUKAN),expense:nv(x.PENGELUARAN),balance:nv(x.SALDO),show:sv(x.TAMPILKAN)
+  })));
+
+  const last=C.filter(x=>x.balance!==''&&x.balance!==null).slice(-1)[0]||{balance:0};
+  homeBal.textContent=bal.textContent=rup(last.balance);
+  inc.textContent=rup(C.reduce((a,x)=>a+nv(x.income),0));
+  exp.textContent=rup(C.reduce((a,x)=>a+nv(x.expense),0));
+
+  initCashFilters();
+  renderCashDashboard();
+}
+
+function initCashFilters(){
+  const mf=document.getElementById('cashMonthFilter');
+  const yf=document.getElementById('cashYearFilter');
+  if(!mf||!yf||!C.length)return;
+
+  const valid=C.filter(x=>x.date && !isNaN(D(x.date)));
+  const years=[...new Set(valid.map(x=>D(x.date).getFullYear()))].sort((a,b)=>b-a);
+  const latest=valid.slice().sort((a,b)=>D(b.date)-D(a.date))[0];
+  const latestDate=latest?D(latest.date):new Date();
+
+  mf.innerHTML=Array.from({length:12},(_,m)=>`<option value="${m}">${new Date(2026,m,1).toLocaleDateString('id-ID',{month:'long'})}</option>`).join('');
+  yf.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
+
+  mf.value=String(latestDate.getMonth());
+  yf.value=String(latestDate.getFullYear());
+}
+
+function renderCashDashboard(){
+  if(!cashUnlocked && !C.length)return;
+  const mf=document.getElementById('cashMonthFilter');
+  const yf=document.getElementById('cashYearFilter');
+  if(!mf||!yf)return;
+
+  const month=Number(mf.value), year=Number(yf.value);
+  const periodRows=C.filter(x=>x.date && D(x.date).getFullYear()===year && D(x.date).getMonth()===month);
+  const visibleRows=periodRows.filter(x=>['ya','tampil'].includes(String(x.show||'').toLowerCase()));
+  const rowsToShow=visibleRows.length?visibleRows:periodRows;
+
+  const income=periodRows.reduce((a,x)=>a+Number(x.income||0),0);
+  const expense=periodRows.reduce((a,x)=>a+Number(x.expense||0),0);
+
+  const chronological=C.filter(x=>x.date && D(x.date)<=new Date(year,month+1,0,23,59,59))
+    .slice().sort((a,b)=>D(a.date)-D(b.date));
+  const monthChrono=periodRows.slice().sort((a,b)=>D(a.date)-D(b.date));
+  const balanceSource=monthChrono.length?monthChrono:chronological;
+  const monthBalance=balanceSource.length?Number(balanceSource[balanceSource.length-1].balance||0):0;
+
+  const label=new Date(year,month,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  document.getElementById('cashMonthIncome').textContent=rup(income);
+  document.getElementById('cashMonthExpense').textContent=rup(expense);
+  document.getElementById('cashMonthBalance').textContent=rup(monthBalance);
+  ['cashCategoryPeriod','cashFlowPeriod','cashHistoryPeriod'].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.textContent=label;
+  });
+
+  const cats={};
+  periodRows.forEach(x=>{
+    const val=Number(x.expense||0);
+    if(val>0){const k=x.cat||'Lain-Lain';cats[k]=(cats[k]||0)+val}
+  });
+  const catEntries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  const maxCat=catEntries[0]?.[1]||1;
+  const catRoot=document.getElementById('cashCategoryChart');
+  catRoot.innerHTML=catEntries.length?catEntries.map(([name,val])=>`
+    <div class="cash-cat-row">
+      <span class="cash-cat-name" title="${name.replace(/"/g,'&quot;')}">${name}</span>
+      <div class="cash-cat-track"><div class="cash-cat-bar" style="width:${Math.max(2,val/maxCat*100)}%"></div></div>
+      <span class="cash-cat-value">${rup(val)}</span>
+    </div>`).join(''):'<div class="cash-empty">Belum ada pengeluaran pada periode ini.</div>';
+
+  const maxFlow=Math.max(income,expense,1);
+  const net=income-expense;
+  document.getElementById('cashFlowChart').innerHTML=`
+    <div class="cash-flow-item">
+      <div class="cash-flow-top"><span>Pemasukan</span><b class="pos">${rup(income)}</b></div>
+      <div class="cash-flow-track"><div class="cash-flow-bar cash-flow-in" style="width:${income?Math.max(2,income/maxFlow*100):0}%"></div></div>
+    </div>
+    <div class="cash-flow-item">
+      <div class="cash-flow-top"><span>Pengeluaran</span><b class="neg">${rup(expense)}</b></div>
+      <div class="cash-flow-track"><div class="cash-flow-bar cash-flow-out" style="width:${expense?Math.max(2,expense/maxFlow*100):0}%"></div></div>
+    </div>
+    <div class="cash-flow-net"><span>Arus kas bersih bulan ini</span><b class="${net>=0?'pos':'neg'}">${net>=0?'+':''}${rup(net)}</b></div>`;
+
+  txs.innerHTML=rowsToShow.slice().sort((a,b)=>D(b.date)-D(a.date)).map(x=>`
+    <div class="tx">
+      <span>${fd(x.date)}</span>
+      <span><b>${x.cat||'-'}</b><br>${x.desc||''}</span>
+      <b class="${Number(x.income)>0?'pos':'neg'}">${Number(x.income)>0?'+'+rup(x.income):'-'+rup(x.expense)}</b>
+    </div>`).join('')||'<p class="hint">Belum ada transaksi pada periode ini.</p>';
+}
+
 async function submitCashPin(){const pin=cashPinInput.value.trim();if(!pin){cashPinMsg.textContent='Masukkan PIN warga.';return}cashPinBtn.disabled=true;cashPinBtn.textContent='Memeriksa...';cashPinMsg.textContent='';try{const r=await fetch(API_URL+'?action=kas&pin='+encodeURIComponent(pin),{cache:'no-store'}),j=await r.json();if(!j.ok||!j.authorized){cashPinMsg.textContent=j.message||'PIN warga salah.';cashPinInput.select();return}renderCashRows(j.kas);cashUnlocked=true;closeCashPin();go('cash')}catch(e){cashPinMsg.textContent='Data kas belum dapat dibuka. Coba lagi.'}finally{cashPinBtn.disabled=false;cashPinBtn.textContent='Buka Data Kas'}}
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&cashPinModal?.classList.contains('on'))submitCashPin()});
 function visible(x){let s=String(x.status||'').toLowerCase();return !s||s==='tampil'||s==='arsip'||s==='ya'}
@@ -273,9 +462,9 @@ suggestForm.addEventListener('submit',async e=>{e.preventDefault();if(!suggestFo
 function renderLastUpdate(value){
   const el=document.getElementById("lastUpdate");
   if(!el)return;
-  if(!value){el.innerHTML='<span class="lu-dot"></span><span>Data website tersinkron</span>';return;}
+  if(!value){el.innerHTML='<span class="lu-dot"></span><span>Waktu pembaruan belum tersedia</span>';return;}
   const d=new Date(value);
-  if(isNaN(d.getTime())){el.innerHTML='<span class="lu-dot"></span><span>Data website tersinkron</span>';return;}
+  if(isNaN(d.getTime())){el.innerHTML='<span class="lu-dot"></span><span>Waktu pembaruan belum tersedia</span>';return;}
   const tanggal=new Intl.DateTimeFormat("id-ID",{timeZone:"Asia/Jakarta",day:"numeric",month:"long",year:"numeric"}).format(d);
   const jam=new Intl.DateTimeFormat("id-ID",{timeZone:"Asia/Jakarta",hour:"2-digit",minute:"2-digit",hour12:false}).format(d).replace(".",":");
   el.innerHTML='<span class="lu-dot"></span><span>Terakhir diperbarui: '+tanggal+' • '+jam+' WIB</span>';
@@ -284,17 +473,17 @@ function renderLastUpdate(value){
 
 let HUT81=[];
 function hut81Val(x,keys){for(const k of keys){if(x&&x[k]!==undefined&&x[k]!==null&&String(x[k]).trim()!=="")return String(x[k]).trim()}return ""}
-function hut81Visible(x){const v=hut81Val(x,["TAMPILKAN","Tampilkan","tampilkan","STATUS","TAMPIL","status","tampil"]).toLowerCase();return !v||["ya","tampil","aktif","yes","true","1"].includes(v)}
+function hut81Visible(x){const v=hut81Val(x,["STATUS","TAMPIL","status","tampil"]).toLowerCase();return !v||["ya","tampil","aktif","yes","true","1"].includes(v)}
 function hut81Initials(name){return String(name||"").trim().split(/\s+/).slice(0,2).map(v=>v[0]||"").join("").toUpperCase()||"RI"}
 function hut81Escape(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function hut81IsActive(){return Date.now()<Date.UTC(2026,7,22,17,0,0)}
 function applyHut81Visibility(){const card=document.getElementById("hut81HomeCard");if(card)card.style.display=hut81IsActive()?"block":"none";if(!hut81IsActive()&&document.getElementById("hut81committee")?.classList.contains("on"))go("home")}
 function renderHut81Committee(rows){
  const root=document.getElementById("hut81CommitteeList");if(!root)return;
- const data=(Array.isArray(rows)?rows:[]).filter(hut81Visible).map((x,i)=>({name:hut81Val(x,["NAMA","Nama","nama","NAME","name"]),role:hut81Val(x,["JABATAN","Jabatan","jabatan","PERAN","Peran","peran","ROLE","role"]),note:hut81Val(x,["KETERANGAN","Keterangan","keterangan"]),group:hut81Val(x,["DIVISI","Divisi","divisi","SEKSI","Seksi","seksi","BIDANG","Bidang","bidang","KELOMPOK","kelompok"])||"Panitia",photo:hut81Val(x,["FOTO","Foto","foto","PHOTO","photo"]),order:Number(hut81Val(x,["URUTAN","Urutan","urutan","ORDER","order"])||9999),i})).filter(x=>x.name).sort((a,b)=>a.order-b.order||a.i-b.i);
+ const data=(Array.isArray(rows)?rows:[]).filter(hut81Visible).map((x,i)=>({name:hut81Val(x,["NAMA","Nama","nama","NAME","name"]),role:hut81Val(x,["JABATAN","Jabatan","jabatan","PERAN","Peran","peran","ROLE","role"]),group:hut81Val(x,["DIVISI","Divisi","divisi","SEKSI","Seksi","seksi","BIDANG","Bidang","bidang","KELOMPOK","kelompok"])||"Panitia",photo:hut81Val(x,["FOTO","Foto","foto","PHOTO","photo"]),order:Number(hut81Val(x,["URUTAN","Urutan","urutan","ORDER","order"])||9999),i})).filter(x=>x.name).sort((a,b)=>a.order-b.order||a.i-b.i);
  if(!data.length){root.innerHTML='<div class="hut81-empty">Susunan panitia sedang diperbarui.</div>';return}
  const groups=[];data.forEach(x=>{let g=groups.find(v=>v.name===x.group);if(!g){g={name:x.group,items:[]};groups.push(g)}g.items.push(x)});
- root.innerHTML=groups.map(g=>`<section class="hut81-group"><h4 class="hut81-group-title"><span>🇮🇩</span>${hut81Escape(g.name)}</h4><div class="hut81-members">${g.items.map(x=>{const im=x.photo?imgUrl(x.photo):"";return `<div class="hut81-member">${im?`<img class="hut81-avatar" src="${hut81Escape(im)}" loading="lazy" alt="">`:`<div class="hut81-avatar hut81-avatar-fallback">${hut81Escape(hut81Initials(x.name))}</div>`}<div><strong>${hut81Escape(x.name)}</strong><span>${hut81Escape(x.role||x.group)}${x.note?" • "+hut81Escape(x.note):""}</span></div></div>`}).join("")}</div></section>`).join("")
+ root.innerHTML=groups.map(g=>`<section class="hut81-group"><h4 class="hut81-group-title"><span>🇮🇩</span>${hut81Escape(g.name)}</h4><div class="hut81-members">${g.items.map(x=>{const im=x.photo?imgUrl(x.photo):"";return `<div class="hut81-member">${im?`<img class="hut81-avatar" src="${hut81Escape(im)}" loading="lazy" alt="">`:`<div class="hut81-avatar hut81-avatar-fallback">${hut81Escape(hut81Initials(x.name))}</div>`}<div><strong>${hut81Escape(x.name)}</strong><span>${hut81Escape(x.role||x.group)}</span></div></div>`}).join("")}</div></section>`).join("")
 }
 applyHut81Visibility();
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&document.activeElement?.id==="hut81HomeCard"){e.preventDefault();go("hut81committee")}});
@@ -314,7 +503,7 @@ async function refreshFromLiveAPI(){
     const arr=v=>Array.isArray(v)?v:[];
     const s=v=>v==null?"":String(v);
     const n=v=>Number(v||0);
-    HUT81.splice(0,HUT81.length,...arr(j.panitia_hut_ri||j.panitia||j.panitia_hut||j.panitiaHUT||j["panitia hut"]));
+    HUT81.splice(0,HUT81.length,...arr(j.panitia||j.panitia_hut||j.panitiaHUT||j["panitia hut"]));
     renderHut81Committee(HUT81);
     applyHut81Visibility();
 
