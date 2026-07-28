@@ -319,11 +319,17 @@ function renderCashRows(rows){
   const sv=v=>v==null?'':String(v), nv=v=>Number(v||0);
   C.splice(0,C.length,...(Array.isArray(rows)?rows:[]).map(x=>({
     id:sv(x.ID),date:sv(x.TANGGAL),type:sv(x.JENIS),cat:sv(x.KATEGORI),desc:sv(x.KETERANGAN),
-    income:nv(x.PEMASUKAN),expense:nv(x.PENGELUARAN),balance:nv(x.SALDO),show:sv(x.TAMPILKAN)
+    income:nv(x.PEMASUKAN),expense:nv(x.PENGELUARAN),
+    balance:(x.SALDO==null||String(x.SALDO).trim()==='')?null:nv(x.SALDO),
+    show:sv(x.TAMPILKAN)
   })));
 
-  const last=C.filter(x=>x.balance!==''&&x.balance!==null).slice(-1)[0]||{balance:0};
-  homeBal.textContent=bal.textContent=rup(last.balance);
+  const dated=C.filter(x=>x.date&&!isNaN(D(x.date))).slice().sort((a,b)=>D(a.date)-D(b.date));
+  const withBalance=dated.filter(x=>x.balance!==null);
+  const last=withBalance.length?withBalance[withBalance.length-1]:null;
+  const currentBalance=last?Number(last.balance||0):C.reduce((a,x)=>a+nv(x.income)-nv(x.expense),0);
+
+  homeBal.textContent=bal.textContent=rup(currentBalance);
   inc.textContent=rup(C.reduce((a,x)=>a+nv(x.income),0));
   exp.textContent=rup(C.reduce((a,x)=>a+nv(x.expense),0));
 
@@ -337,57 +343,87 @@ function initCashFilters(){
   const yf=document.getElementById('cashYearFilter');
   if(!sf||!ef||!yf||!C.length)return;
 
-  const valid=C.filter(x=>x.date && !isNaN(D(x.date)));
+  const valid=C.filter(x=>x.date&&!isNaN(D(x.date)));
+  if(!valid.length)return;
+
   const years=[...new Set(valid.map(x=>D(x.date).getFullYear()))].sort((a,b)=>b-a);
   const latest=valid.slice().sort((a,b)=>D(b.date)-D(a.date))[0];
   const latestDate=latest?D(latest.date):new Date();
   const opts=Array.from({length:12},(_,m)=>`<option value="${m}">${new Date(2026,m,1).toLocaleDateString('id-ID',{month:'long'})}</option>`).join('');
 
+  const oldS=sf.value,oldE=ef.value,oldY=yf.value;
   sf.innerHTML=opts; ef.innerHTML=opts;
   yf.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
-  sf.value=String(latestDate.getMonth());
-  ef.value=String(latestDate.getMonth());
-  yf.value=String(latestDate.getFullYear());
+
+  const chosenYear=years.includes(Number(oldY))?Number(oldY):latestDate.getFullYear();
+  yf.value=String(chosenYear);
+  sf.value=(oldS!==''?oldS:String(latestDate.getMonth()));
+  ef.value=(oldE!==''?oldE:String(latestDate.getMonth()));
 }
 
 function renderCashDashboard(){
-  if(!cashUnlocked && !C.length)return;
+  if(!cashUnlocked&&!C.length)return;
   const sf=document.getElementById('cashStartMonthFilter');
   const ef=document.getElementById('cashEndMonthFilter');
   const yf=document.getElementById('cashYearFilter');
   if(!sf||!ef||!yf)return;
 
-  let sm=Number(sf.value), em=Number(ef.value), year=Number(yf.value);
+  let sm=Number(sf.value),em=Number(ef.value),year=Number(yf.value);
+  if(!Number.isFinite(sm)||!Number.isFinite(em)||!Number.isFinite(year))return;
   if(sm>em){em=sm;ef.value=String(em)}
-  const startDate=new Date(year,sm,1);
+
+  const startDate=new Date(year,sm,1,0,0,0,0);
   const endDate=new Date(year,em+1,0,23,59,59,999);
-  const periodRows=C.filter(x=>x.date && D(x.date)>=startDate && D(x.date)<=endDate);
-  const visible=periodRows.filter(x=>['ya','tampil'].includes(String(x.show||'').toLowerCase()));
+  const dated=C.filter(x=>x.date&&!isNaN(D(x.date))).slice().sort((a,b)=>D(a.date)-D(b.date));
+  const periodRows=dated.filter(x=>D(x.date)>=startDate&&D(x.date)<=endDate);
+
+  const visible=periodRows.filter(x=>['ya','tampil','aktif','yes','true','1'].includes(String(x.show||'').trim().toLowerCase()));
   const rowsToShow=visible.length?visible:periodRows;
+
   const income=periodRows.reduce((a,x)=>a+Number(x.income||0),0);
   const expense=periodRows.reduce((a,x)=>a+Number(x.expense||0),0);
 
-  const beforeEnd=C.filter(x=>x.date&&D(x.date)<=endDate).slice().sort((a,b)=>D(a.date)-D(b.date));
-  const periodSorted=periodRows.slice().sort((a,b)=>D(a.date)-D(b.date));
-  const bs=periodSorted.length?periodSorted:beforeEnd;
-  const balance=bs.length?Number(bs[bs.length-1].balance||0):0;
+  // Saldo awal = saldo transaksi terakhir SEBELUM periode.
+  // Saldo akhir periode = saldo awal + pemasukan periode - pengeluaran periode.
+  const beforeStart=dated.filter(x=>D(x.date)<startDate);
+  const priorWithBalance=beforeStart.filter(x=>x.balance!==null);
+  let openingBalance=0;
+
+  if(priorWithBalance.length){
+    openingBalance=Number(priorWithBalance[priorWithBalance.length-1].balance||0);
+  }else if(beforeStart.length){
+    openingBalance=beforeStart.reduce((a,x)=>a+Number(x.income||0)-Number(x.expense||0),0);
+  }
+
+  const balance=openingBalance+income-expense;
 
   const mn=m=>new Date(year,m,1).toLocaleDateString('id-ID',{month:'long'});
   const label=sm===em?`${mn(sm)} ${year}`:`${mn(sm)} – ${mn(em)} ${year}`;
+
   document.getElementById('cashMonthIncome').textContent=rup(income);
   document.getElementById('cashMonthExpense').textContent=rup(expense);
   document.getElementById('cashMonthBalance').textContent=rup(balance);
-  ['cashCategoryPeriod','cashFlowPeriod','cashHistoryPeriod'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=label});
+  ['cashCategoryPeriod','cashFlowPeriod','cashHistoryPeriod'].forEach(id=>{
+    const e=document.getElementById(id);if(e)e.textContent=label;
+  });
 
   const cats={};
-  periodRows.forEach(x=>{const v=Number(x.expense||0);if(v>0){const k=x.cat||'Lain-Lain';cats[k]=(cats[k]||0)+v}});
-  const ce=Object.entries(cats).sort((a,b)=>b[1]-a[1]), max=ce[0]?.[1]||1;
+  periodRows.forEach(x=>{
+    const v=Number(x.expense||0);
+    if(v>0){
+      const k=x.cat||'Lain-Lain';
+      cats[k]=(cats[k]||0)+v;
+    }
+  });
+
+  const ce=Object.entries(cats).sort((a,b)=>b[1]-a[1]),max=ce[0]?.[1]||1;
   document.getElementById('cashCategoryChart').innerHTML=ce.length?ce.map(([n,v])=>`
     <div class="cash-cat-row"><span class="cash-cat-name">${n}</span>
     <div class="cash-cat-track"><div class="cash-cat-bar" style="width:${Math.max(2,v/max*100)}%"></div></div>
-    <span class="cash-cat-value">${rup(v)}</span></div>`).join(''):'<div class="cash-empty">Belum ada pengeluaran pada periode ini.</div>';
+    <span class="cash-cat-value">${rup(v)}</span></div>`).join(''):
+    '<div class="cash-empty">Belum ada pengeluaran pada periode ini.</div>';
 
-  const mf=Math.max(income,expense,1), net=income-expense;
+  const mf=Math.max(income,expense,1),net=income-expense;
   document.getElementById('cashFlowChart').innerHTML=`
     <div class="cash-flow-item"><div class="cash-flow-top"><span>Pemasukan</span><b class="pos">${rup(income)}</b></div><div class="cash-flow-track"><div class="cash-flow-bar cash-flow-in" style="width:${income?Math.max(2,income/mf*100):0}%"></div></div></div>
     <div class="cash-flow-item"><div class="cash-flow-top"><span>Pengeluaran</span><b class="neg">${rup(expense)}</b></div><div class="cash-flow-track"><div class="cash-flow-bar cash-flow-out" style="width:${expense?Math.max(2,expense/mf*100):0}%"></div></div></div>
@@ -395,7 +431,8 @@ function renderCashDashboard(){
 
   txs.innerHTML=rowsToShow.slice().sort((a,b)=>D(b.date)-D(a.date)).map(x=>`
     <div class="tx"><span>${fd(x.date)}</span><span><b>${x.cat||'-'}</b><br>${x.desc||''}</span>
-    <b class="${Number(x.income)>0?'pos':'neg'}">${Number(x.income)>0?'+'+rup(x.income):'-'+rup(x.expense)}</b></div>`).join('')||'<p class="hint">Belum ada transaksi pada periode ini.</p>';
+    <b class="${Number(x.income)>0?'pos':'neg'}">${Number(x.income)>0?'+'+rup(x.income):'-'+rup(x.expense)}</b></div>`).join('')||
+    '<p class="hint">Belum ada transaksi pada periode ini.</p>';
 }
 
 async function submitCashPin(){const pin=cashPinInput.value.trim();if(!pin){cashPinMsg.textContent='Masukkan PIN warga.';return}cashPinBtn.disabled=true;cashPinBtn.textContent='Memeriksa...';cashPinMsg.textContent='';try{const r=await fetch(API_URL+'?action=kas&pin='+encodeURIComponent(pin),{cache:'no-store'}),j=await r.json();if(!j.ok||!j.authorized){cashPinMsg.textContent=j.message||'PIN warga salah.';cashPinInput.select();return}renderCashRows(j.kas);cashUnlocked=true;closeCashPin();go('cash')}catch(e){cashPinMsg.textContent='Data kas belum dapat dibuka. Coba lagi.'}finally{cashPinBtn.disabled=false;cashPinBtn.textContent='Buka Data Kas'}}
@@ -459,18 +496,55 @@ function renderLastUpdate(value){
 
 
 let HUT81=[];
-function hut81Val(x,keys){for(const k of keys){if(x&&x[k]!==undefined&&x[k]!==null&&String(x[k]).trim()!=="")return String(x[k]).trim()}return ""}
-function hut81Visible(x){const v=hut81Val(x,["STATUS","TAMPIL","status","tampil"]).toLowerCase();return !v||["ya","tampil","aktif","yes","true","1"].includes(v)}
+function hut81Key(v){return String(v??"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+function hut81Val(x,keys){
+  if(!x||typeof x!=="object")return "";
+  for(const k of keys){
+    if(x[k]!==undefined&&x[k]!==null&&String(x[k]).trim()!=="")return String(x[k]).trim();
+  }
+  const wanted=keys.map(hut81Key);
+  for(const [k,v] of Object.entries(x)){
+    if(wanted.includes(hut81Key(k))&&v!==undefined&&v!==null&&String(v).trim()!=="")return String(v).trim();
+  }
+  return "";
+}
+function hut81Visible(x){
+  const v=hut81Val(x,["TAMPILKAN","TAMPIL","STATUS","AKTIF","VISIBLE","SHOW"]).toLowerCase();
+  return !v||["ya","tampil","aktif","yes","true","1","y"].includes(v);
+}
 function hut81Initials(name){return String(name||"").trim().split(/\s+/).slice(0,2).map(v=>v[0]||"").join("").toUpperCase()||"RI"}
 function hut81Escape(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function hut81IsActive(){return Date.now()<Date.UTC(2026,7,22,17,0,0)}
 function applyHut81Visibility(){const card=document.getElementById("hut81HomeCard");if(card)card.style.display=hut81IsActive()?"block":"none";if(!hut81IsActive()&&document.getElementById("hut81committee")?.classList.contains("on"))go("home")}
 function renderHut81Committee(rows){
- const root=document.getElementById("hut81CommitteeList");if(!root)return;
- const data=(Array.isArray(rows)?rows:[]).filter(hut81Visible).map((x,i)=>({name:hut81Val(x,["NAMA","Nama","nama","NAME","name"]),role:hut81Val(x,["JABATAN","Jabatan","jabatan","PERAN","Peran","peran","ROLE","role"]),group:hut81Val(x,["DIVISI","Divisi","divisi","SEKSI","Seksi","seksi","BIDANG","Bidang","bidang","KELOMPOK","kelompok"])||"Panitia",photo:hut81Val(x,["FOTO","Foto","foto","PHOTO","photo"]),order:Number(hut81Val(x,["URUTAN","Urutan","urutan","ORDER","order"])||9999),i})).filter(x=>x.name).sort((a,b)=>a.order-b.order||a.i-b.i);
- if(!data.length){root.innerHTML='<div class="hut81-empty">Susunan panitia sedang diperbarui.</div>';return}
- const groups=[];data.forEach(x=>{let g=groups.find(v=>v.name===x.group);if(!g){g={name:x.group,items:[]};groups.push(g)}g.items.push(x)});
- root.innerHTML=groups.map(g=>`<section class="hut81-group"><h4 class="hut81-group-title"><span>🇮🇩</span>${hut81Escape(g.name)}</h4><div class="hut81-members">${g.items.map(x=>{const im=x.photo?imgUrl(x.photo):"";return `<div class="hut81-member">${im?`<img class="hut81-avatar" src="${hut81Escape(im)}" loading="lazy" alt="">`:`<div class="hut81-avatar hut81-avatar-fallback">${hut81Escape(hut81Initials(x.name))}</div>`}<div><strong>${hut81Escape(x.name)}</strong><span>${hut81Escape(x.role||x.group)}</span></div></div>`}).join("")}</div></section>`).join("")
+  const root=document.getElementById("hut81CommitteeList");if(!root)return;
+  const raw=Array.isArray(rows)?rows:[];
+  const data=raw.filter(hut81Visible).map((x,i)=>({
+    name:hut81Val(x,["NAMA","NAMA PANITIA","NAMA LENGKAP","NAME","ANGGOTA"]),
+    role:hut81Val(x,["JABATAN","PERAN","ROLE","POSISI"]),
+    note:hut81Val(x,["KETERANGAN","CATATAN","NOTE"]),
+    group:hut81Val(x,["DIVISI","SEKSI","BIDANG","KELOMPOK","GROUP"])||"Panitia",
+    photo:hut81Val(x,["FOTO","PHOTO","FOTO PROFIL","GAMBAR"]),
+    order:Number(hut81Val(x,["URUTAN","ORDER","NO","NOMOR"])||9999),
+    i
+  })).filter(x=>x.name).sort((a,b)=>a.order-b.order||a.i-b.i);
+
+  if(!data.length){
+    root.innerHTML='<div class="hut81-empty">Data susunan panitia belum tersedia dari spreadsheet.</div>';
+    return;
+  }
+
+  const groups=[];
+  data.forEach(x=>{
+    let g=groups.find(v=>v.name===x.group);
+    if(!g){g={name:x.group,items:[]};groups.push(g)}
+    g.items.push(x);
+  });
+
+  root.innerHTML=groups.map(g=>`<section class="hut81-group"><h4 class="hut81-group-title"><span>🇮🇩</span>${hut81Escape(g.name)}</h4><div class="hut81-members">${g.items.map(x=>{
+    const im=x.photo?imgUrl(x.photo):"";
+    return `<div class="hut81-member">${im?`<img class="hut81-avatar" src="${hut81Escape(im)}" loading="lazy" alt="">`:`<div class="hut81-avatar hut81-avatar-fallback">${hut81Escape(hut81Initials(x.name))}</div>`}<div><strong>${hut81Escape(x.name)}</strong><span>${hut81Escape(x.role||x.group)}${x.note?" • "+hut81Escape(x.note):""}</span></div></div>`
+  }).join("")}</div></section>`).join("");
 }
 applyHut81Visibility();
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&document.activeElement?.id==="hut81HomeCard"){e.preventDefault();go("hut81committee")}});
@@ -490,7 +564,7 @@ async function refreshFromLiveAPI(){
     const arr=v=>Array.isArray(v)?v:[];
     const s=v=>v==null?"":String(v);
     const n=v=>Number(v||0);
-    HUT81.splice(0,HUT81.length,...arr(j.panitia||j.panitia_hut||j.panitiaHUT||j["panitia hut"]));
+    HUT81.splice(0,HUT81.length,...arr(j.panitia_hut_ri||j.panitiaHutRi||j.panitia_hut||j.panitiaHUT||j.panitia||j["panitia hut"]||j["panitia hut ri"]));
     renderHut81Committee(HUT81);
     applyHut81Visibility();
 
