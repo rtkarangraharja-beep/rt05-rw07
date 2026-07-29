@@ -53,17 +53,14 @@ header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#a80c1
 .birthday-wish{margin-top:13px;padding-top:12px;border-top:1px dashed rgba(159,18,57,.18);font-size:12px;line-height:1.65;color:#7c2d12}.birthday-sign{display:block;margin-top:6px;font-weight:900;color:#9f1239}
 
 
-/* STATISTIK LINGKUNGAN - BERANDA */
-.env-stats{margin:18px 0 16px;padding:18px;border-radius:20px;background:linear-gradient(145deg,#ffffff,#f7fbff);border:1px solid #e5e7eb;box-shadow:0 8px 24px rgba(15,23,42,.05)}
-.env-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.env-stats-title{font-size:16px;font-weight:900;color:#111827}.env-stats-sub{font-size:11px;color:#6b7280;margin-top:3px}
-.env-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
-.env-stat{background:#fff;border:1px solid #eef0f3;border-radius:15px;padding:13px 10px;text-align:center}
+/* STATISTIK LINGKUNGAN */
+.env-stats{margin:18px 0 16px;padding:18px;border-radius:20px;background:linear-gradient(145deg,#fff,#f7fbff);border:1px solid #e5e7eb;box-shadow:0 8px 24px rgba(15,23,42,.05)}
+.env-stats-title{font-size:16px;font-weight:900;color:#111827}.env-stats-sub{font-size:11px;color:#6b7280;margin-top:3px;margin-bottom:14px}
+.env-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.env-stat{background:#fff;border:1px solid #eef0f3;border-radius:15px;padding:13px 10px;text-align:center}
 .env-stat-icon{font-size:20px;margin-bottom:5px}.env-stat-value{font-size:20px;font-weight:900;color:#111827;line-height:1}.env-stat-label{font-size:10px;color:#6b7280;margin-top:5px;font-weight:700}
-.env-progress{margin-top:13px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:11px 12px}
-.env-progress-top{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#4b5563;font-weight:700;margin-bottom:7px}.env-progress-top b{color:#111827}
+.env-progress{margin-top:13px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:11px 12px}.env-progress-top{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#4b5563;font-weight:700;margin-bottom:7px}.env-progress-top b{color:#111827}
 .env-progress-track{height:7px;border-radius:99px;background:#eef2f7;overflow:hidden}.env-progress-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#2563eb,#16a34a);width:0}
-@media(max-width:600px){.env-stats{padding:14px}.env-stats-grid{grid-template-columns:repeat(2,1fr)}.env-stat{padding:12px 8px}.env-stat-value{font-size:19px}}
+@media(max-width:600px){.env-stats{padding:14px}.env-stats-grid{grid-template-columns:repeat(2,1fr)}}
 
 </style>
 <style>
@@ -255,24 +252,32 @@ body.rt-loading #liveLoading{visibility:visible !important}
 <div class="sectionhead" style="margin-top:27px"><h3>Pengumuman Terdekat</h3><button class="btn ghost" onclick="go('announcements')">Lihat Pengumuman</button></div><div id="homeNotice"></div>
 
 <div class="env-stats" id="homeEnvironmentStats">
-  <div class="env-stats-head"><div><div class="env-stats-title">📊 Statistik Lingkungan</div><div class="env-stats-sub">Data Kependudukan RT 05 RW 07</div></div></div>
-  <div class="env-stats-grid">
-    <div class="env-stat"><div class="env-stat-icon">👥</div><div class="env-stat-value" id="envPopulation">-</div><div class="env-stat-label">Total Warga</div></div>
-    <div class="env-stat"><div class="env-stat-icon">🏠</div><div class="env-stat-value" id="envKK">-</div><div class="env-stat-label">Kepala Keluarga</div></div>
-    <div class="env-stat"><div class="env-stat-icon">♂️</div><div class="env-stat-value" id="envMale">-</div><div class="env-stat-label">Laki-laki</div></div>
-    <div class="env-stat"><div class="env-stat-icon">♀️</div><div class="env-stat-value" id="envFemale">-</div><div class="env-stat-label">Perempuan</div></div>
-  </div>
-  <div class="env-progress"><div class="env-progress-top"><span>Pendataan KK</span><b id="envKKProgressText">-</b></div><div class="env-progress-track"><div class="env-progress-bar" id="envKKProgressBar"></div></div></div>
+ <div class="env-stats-title">📊 Statistik Lingkungan</div>
+ <div class="env-stats-sub">Data Kependudukan RT 05 RW 07</div>
+ <div class="env-stats-grid">
+  <div class="env-stat"><div class="env-stat-icon">👥</div><div class="env-stat-value" id="envPopulation">-</div><div class="env-stat-label">Total Warga</div></div>
+  <div class="env-stat"><div class="env-stat-icon">🏠</div><div class="env-stat-value" id="envKK">-</div><div class="env-stat-label">Kepala Keluarga</div></div>
+  <div class="env-stat"><div class="env-stat-icon">♂️</div><div class="env-stat-value" id="envMale">-</div><div class="env-stat-label">Laki-laki</div></div>
+  <div class="env-stat"><div class="env-stat-icon">♀️</div><div class="env-stat-value" id="envFemale">-</div><div class="env-stat-label">Perempuan</div></div>
+ </div>
+ <div class="env-progress"><div class="env-progress-top"><span>Pendataan KK</span><b id="envKKProgressText">-</b></div><div class="env-progress-track"><div class="env-progress-bar" id="envKKProgressBar"></div></div></div>
 </div>
 
-<div class="balance" onclick="openCash()"><div><small>SALDO KAS RT SAAT INI</small><strong id="homeBal">-</strong><div class="more">Lihat rincian kas →</div></div>
+<div class="balance" onclick="openCash()"><div><small>SALDO KAS RT SAAT INI</small><strong id="homeBal">-</strong><div class="more">Lihat rincian kas →</div></div><div style="font-size:30px">›</div></div>
 <a class="wa-community" href="https://chat.whatsapp.com/E4B3MlpaSkQIhyCWNcnMeI" target="_blank" rel="noopener">
 <div class="wa-community-icon">💬</div>
 <div class="wa-community-text"><small>COMMUNITY WHATSAPP</small><strong>Warga RT 05 RW 07</strong><span>Gabung ke grup komunikasi warga →</span></div>
 </a>
+
 <div class="card birthday-card" id="birthdayCard" aria-live="polite">
  <div class="birthday-inner">
   <div class="birthday-head"><div class="birthday-icon">🎂</div><div><div class="birthday-title">Selamat Ulang Tahun!</div><div class="birthday-subtitle" id="birthdayDateLabel">Hari ini ada warga RT 05 yang berulang tahun</div></div></div>
+  <div class="birthday-people" id="birthdayPeople"></div>
+  <div class="birthday-wish">Keluarga besar RT 05 RW 07 mengucapkan selamat ulang tahun. Semoga senantiasa diberikan kesehatan, kebahagiaan, keberkahan, dan segala kebaikan dalam setiap langkah.<span class="birthday-sign">— Pengurus RT 05 RW 07</span></div>
+ </div>
+</div>
+
+
 <div id="hut81HomeCard" class="hut81-home-card" onclick="go('hut81committee')" role="button" tabindex="0" aria-label="Lihat susunan panitia HUT ke-81 RI"><div class="hut81-home-inner"><div class="hut81-flag">🇮🇩</div><div class="hut81-home-text"><small>HUT KE-81 KEMERDEKAAN RI • 2026</small><strong>Susunan Panitia HUT RI</strong><span>Kenali panitia yang menyiapkan rangkaian kegiatan kemerdekaan RT 05 RW 07.</span></div><div class="hut81-arrow">›</div></div></div>
 <div class="sectionhead" style="margin-top:27px"><h3>Kegiatan Terbaru</h3><button class="btn ghost" onclick="go('activities')">Selengkapnya</button></div><div id="latest" class="grid"></div></section>
 <section id="hut81committee" class="page"><button class="btn ghost hut81-back" onclick="go('home')">← Kembali ke Beranda</button><div class="hut81-head"><div class="hut81-kicker">DIRGAHAYU REPUBLIK INDONESIA • 81 TAHUN</div><h3>Susunan Panitia HUT RI</h3><p>Panitia Peringatan HUT ke-81 Kemerdekaan Republik Indonesia RT 005/RW 007, Perumahan Puri Mutiara Indah.</p></div><div id="hut81CommitteeList" class="hut81-groups"><div class="hut81-empty">Memuat susunan panitia...</div></div></section><section id="activities" class="page"><div class="sectionhead"><h3>Arsip Kegiatan</h3></div><div class="filters"><select id="yearFilter" onchange="renderActivities()"></select><select id="monthFilter" onchange="renderActivities()"></select></div><div id="allActivities" class="grid"></div></section>
@@ -745,56 +750,27 @@ function renderBirthdays(rows){
 
 
 function renderEnvironmentStats(rows){
-  const data=Array.isArray(rows)?rows:[];
-  const norm=s=>String(s??"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
-  const num=v=>{const n=Number(String(v??"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:null};
-  const entries=[];
-  data.forEach(r=>{
-    if(!r||typeof r!=="object")return;
-    const vals=Object.values(r);
-    const label=vals.find(v=>typeof v==="string"&&v.trim())||"";
-    let value=null;
-    for(const v of vals){const n=num(v);if(n!==null){value=n;break}}
-    entries.push({label:norm(label),raw:String(label),value,row:r});
-  });
-  const find=(terms)=>{
-    for(const r of data){
-      for(const [k,v] of Object.entries(r)){
-        const nk=norm(k);
-        if(terms.some(t=>nk===norm(t)||nk.includes(norm(t)))){const n=num(v);if(n!==null)return n}
-      }
-    }
-    for(const e of entries)if(terms.some(t=>e.label.includes(norm(t)))&&e.value!==null)return e.value;
-    return null;
-  };
-  let pop=find(["TOTAL WARGA","JUMLAH WARGA","TOTAL JIWA","JUMLAH JIWA"]);
-  let kk=find(["TOTAL KK","JUMLAH KK","KEPALA KELUARGA"]);
-  let entered=find(["KK SUDAH TERINPUT","KK TERDATA","KK TERINPUT","SUDAH TERDATA"]);
-  let male=find(["LAKI-LAKI","LAKI LAKI","PRIA"]);
-  let female=find(["PEREMPUAN","WANITA"]);
-
-  // Support detail-per-person datasets too.
-  if(pop===null && data.length && data.some(r=>Object.keys(r).some(k=>["nama","nik"].includes(norm(k))))) pop=data.length;
-  if(male===null||female===null){
-    let m=0,f=0,seen=false;
-    data.forEach(r=>Object.entries(r).forEach(([k,v])=>{
-      if(["jeniskelamin","jk"].includes(norm(k))){
-        seen=true;const z=norm(v);if(["l","lakilaki","pria"].includes(z))m++;else if(["p","perempuan","wanita"].includes(z))f++;
-      }
-    }));
-    if(seen){if(male===null)male=m;if(female===null)female=f}
-  }
-  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v===null||v===undefined?"-":Number(v).toLocaleString("id-ID")};
-  set("envPopulation",pop);set("envKK",kk);set("envMale",male);set("envFemale",female);
-  const text=document.getElementById("envKKProgressText"),bar=document.getElementById("envKKProgressBar");
-  if(kk&&entered!==null){
-    const pct=Math.max(0,Math.min(100,entered/kk*100));
-    if(text)text.textContent=`${entered.toLocaleString("id-ID")} dari ${kk.toLocaleString("id-ID")} KK • ${pct.toLocaleString("id-ID",{maximumFractionDigits:1})}%`;
-    if(bar)bar.style.width=pct+"%";
-  }else{
-    if(text)text.textContent="Data mengikuti database warga";
-    if(bar)bar.style.width="0%";
-  }
+ const data=Array.isArray(rows)?rows:[];
+ const norm=s=>String(s??"").trim().toLowerCase().replace(/[^a-z0-9]/g,"");
+ const get=(category,sub)=>{
+   const r=data.find(x=>norm(x["KATEGORI"])===norm(category)&&norm(x["SUB KATEGORI"])===norm(sub));
+   if(!r)return null;
+   const n=Number(r["JUMLAH"]);return Number.isFinite(n)?n:null;
+ };
+ const pop=get("Penduduk","Total Jiwa");
+ const kk=get("Jumlah KK","Total KK");
+ const entered=get("Jumlah KK Terinput","Total KK terinput");
+ const male=get("Jenis Kelamin","Laki-Laki");
+ // Spreadsheet saat ini punya typo "Janis Kelamin" untuk Perempuan, jadi support keduanya.
+ const female=get("Jenis Kelamin","Perempuan") ?? get("Janis Kelamin","Perempuan");
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v==null?"-":v.toLocaleString("id-ID")};
+ set("envPopulation",pop);set("envKK",kk);set("envMale",male);set("envFemale",female);
+ const t=document.getElementById("envKKProgressText"),b=document.getElementById("envKKProgressBar");
+ if(kk&&entered!=null){
+   const pct=Math.max(0,Math.min(100,entered/kk*100));
+   if(t)t.textContent=`${entered.toLocaleString("id-ID")} dari ${kk.toLocaleString("id-ID")} KK • ${pct.toLocaleString("id-ID",{maximumFractionDigits:1})}%`;
+   if(b)b.style.width=pct+"%";
+ } else {if(t)t.textContent="-";if(b)b.style.width="0%"}
 }
 
 </script>
