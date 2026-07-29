@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rtkarangraharja-beep.github.io/rt05-rw07/sitemap.xml
