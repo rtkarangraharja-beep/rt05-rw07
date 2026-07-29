@@ -435,16 +435,40 @@ function renderCashDashboard(){
   // Saldo awal = saldo transaksi terakhir SEBELUM periode.
   // Saldo akhir periode = saldo awal + pemasukan periode - pengeluaran periode.
   const beforeStart=dated.filter(x=>D(x.date)<startDate);
-  const priorWithBalance=beforeStart.filter(x=>x.balance!==null);
   let openingBalance=0;
 
-  if(priorWithBalance.length){
-    openingBalance=Number(priorWithBalance[priorWithBalance.length-1].balance||0);
-  }else if(beforeStart.length){
-    openingBalance=beforeStart.reduce((a,x)=>a+Number(x.income||0)-Number(x.expense||0),0);
+  // Saldo awal periode = saldo penutupan tepat sebelum bulan yang dipilih.
+  // Jika ada nilai SALDO sebagai anchor, lanjutkan semua transaksi setelah
+  // anchor sampai sebelum periode agar saldo awal tidak terpotong.
+  const anchorIndexes=[];
+  beforeStart.forEach((x,i)=>{ if(x.balance!==null) anchorIndexes.push(i); });
+
+  if(anchorIndexes.length){
+    const ai=anchorIndexes[anchorIndexes.length-1];
+    openingBalance=Number(beforeStart[ai].balance||0);
+
+    for(let i=ai+1;i<beforeStart.length;i++){
+      openingBalance += Number(beforeStart[i].income||0)
+                      - Number(beforeStart[i].expense||0);
+    }
+  }else{
+    openingBalance=beforeStart.reduce(
+      (a,x)=>a+Number(x.income||0)-Number(x.expense||0),0
+    );
   }
 
-  const balance=openingBalance+income-expense;
+  // Saldo akhir periode mengikuti SALDO transaksi terakhir sampai akhir periode.
+  // Ini membuat Juli–Juli sama dengan saldo saat ini jika Juli adalah periode terbaru,
+  // dan bulan berikutnya otomatis membawa saldo penutupan bulan sebelumnya.
+  const throughEnd=dated.filter(x=>D(x.date)<=endDate);
+  const endWithBalance=throughEnd.filter(x=>x.balance!==null);
+
+  let balance;
+  if(endWithBalance.length){
+    balance=Number(endWithBalance[endWithBalance.length-1].balance||0);
+  }else{
+    balance=openingBalance+income-expense;
+  }
 
   const mn=m=>new Date(year,m,1).toLocaleDateString('id-ID',{month:'long'});
   const label=sm===em?`${mn(sm)} ${year}`:`${mn(sm)} – ${mn(em)} ${year}`;
