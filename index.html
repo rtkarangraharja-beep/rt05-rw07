@@ -62,6 +62,11 @@ header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#a80c1
 .env-progress-track{height:7px;border-radius:99px;background:#eef2f7;overflow:hidden}.env-progress-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#2563eb,#16a34a);width:0}
 @media(max-width:600px){.env-stats{padding:14px}.env-stats-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+.cash-opening-summary{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:-2px 0 18px;padding:12px 15px;border:1px solid #e5e7eb;border-radius:13px;background:#f8fafc;font-size:12px;color:#64748b}
+.cash-opening-summary strong{font-size:13px;color:#111827;white-space:nowrap}
+@media(max-width:520px){.cash-opening-summary{padding:11px 12px}.cash-opening-summary span{font-size:11px}.cash-opening-summary strong{font-size:12px}}
+
 </style>
 <style>
 @media(max-width:760px){
@@ -308,6 +313,10 @@ body.rt-loading #liveLoading{visibility:visible !important}
     <div class="stat cash-stat-out"><small>Pengeluaran Periode</small><strong id="cashMonthExpense">Rp 0</strong></div>
     <div class="stat cash-stat-balance"><small>Saldo Akhir Periode</small><strong id="cashMonthBalance">Rp 0</strong></div>
   </div>
+  <div class="cash-opening-summary">
+    <span id="cashOpeningLabel">Sisa saldo bulan sebelumnya</span>
+    <strong id="cashOpeningBalance">Rp 0</strong>
+  </div>
 
   <div class="cash-dashboard-grid">
     <div class="cash-panel">
@@ -476,6 +485,14 @@ function renderCashDashboard(){
   document.getElementById('cashMonthIncome').textContent=rup(income);
   document.getElementById('cashMonthExpense').textContent=rup(expense);
   document.getElementById('cashMonthBalance').textContent=rup(balance);
+
+  const openingLabel=document.getElementById('cashOpeningLabel');
+  const openingEl=document.getElementById('cashOpeningBalance');
+  if(openingEl) openingEl.textContent=rup(openingBalance);
+  if(openingLabel){
+    const prevDate=new Date(year,sm,0);
+    openingLabel.textContent='Sisa saldo '+prevDate.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  }
   ['cashCategoryPeriod','cashFlowPeriod','cashHistoryPeriod'].forEach(id=>{
     const e=document.getElementById(id);if(e)e.textContent=label;
   });
